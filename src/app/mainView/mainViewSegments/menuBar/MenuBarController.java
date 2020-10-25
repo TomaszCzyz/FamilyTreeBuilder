@@ -26,7 +26,7 @@ public class MenuBarController extends MainViewSegment implements Initializable 
 
     private String saveURL;
 
-    private BooleanProperty ifCanSave;
+    private final BooleanProperty ifCanSave;
 
     @FXML
     public Button saveButton;
@@ -110,7 +110,5 @@ public class MenuBarController extends MainViewSegment implements Initializable 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         saveButton.disableProperty().bind(ifCanSave.not());
-
-
     }
 }
