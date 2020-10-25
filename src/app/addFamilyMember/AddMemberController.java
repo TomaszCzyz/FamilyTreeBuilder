@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.Button;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -20,9 +21,11 @@ import basics.FamilyMember;
 
 public class AddMemberController implements Initializable {
 
+    //i think it would be better if i change it to casual Strings and make a method to take their vaules;
     private final StringProperty firstName = new SimpleStringProperty();
     private final StringProperty secondName = new SimpleStringProperty();
     private final StringProperty lastName = new SimpleStringProperty();
+    private final StringProperty birthDate = new SimpleStringProperty("");
     private final StringProperty notes = new SimpleStringProperty();
 
     @FXML
@@ -63,6 +66,9 @@ public class AddMemberController implements Initializable {
             firstName.setValue(firstNameTextField.getText());
             secondName.setValue(secondNameTextField.getText());
             lastName.setValue(lastNameTextField.getText());
+            if(birthDateField.getValue() != null) {
+                birthDate.setValue(birthDateField.getValue().toString());
+            }
             notes.setValue(notesTextArea.getText());
 
             Stage stage = (Stage) okButton.getScene().getWindow();
@@ -77,7 +83,7 @@ public class AddMemberController implements Initializable {
         List<TextField> requiredTextFields = List.of(firstNameTextField, lastNameTextField);
         for(var textField : requiredTextFields) {
             if(textField.getText().isEmpty()) {
-                message.append("Enter ").append(textField.getId().toString()).append('\n');
+                message.append("Enter ").append(textField.getId()).append('\n');
             }
         }
         if(message.length() > 0)
@@ -133,6 +139,18 @@ public class AddMemberController implements Initializable {
 
     public void setLastName(String lastName) {
         this.lastName.set(lastName);
+    }
+
+    public String getBirthDate() {
+        return birthDate.get();
+    }
+
+    public StringProperty birthDateProperty() {
+        return birthDate;
+    }
+
+    public void setBirthDate(String birthDate) {
+        this.birthDate.set(birthDate);
     }
 
     public String getNotes() {

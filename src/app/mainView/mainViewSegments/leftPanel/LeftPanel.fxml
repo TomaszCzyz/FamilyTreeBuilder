@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="leftPanelVBox" spacing="5.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.mainView.mainViewSegments.LeftPanelController">
+<VBox fx:id="leftPanelVBox" spacing="5.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.mainView.mainViewSegments.leftPanel.LeftPanelController">
     <children>
         <Button fx:id="addButton" mnemonicParsing="false" onAction="#handleAddMemberButtonAction" prefHeight="35.0" prefWidth="35.0" text="Add">
          <font>

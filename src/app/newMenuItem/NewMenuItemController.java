@@ -20,6 +20,8 @@ import java.util.ResourceBundle;
 
 public class NewMenuItemController implements Initializable {
 
+    private boolean isFileCreated = false;
+
     @FXML
     public TextField fileNameTextFiled;
     @FXML
@@ -31,11 +33,11 @@ public class NewMenuItemController implements Initializable {
     @FXML
     public Button cancelButton;
 
-    StringProperty newFileName = new SimpleStringProperty("newFamilyTree.txt");
+    private final StringProperty newFileName = new SimpleStringProperty("newFamilyTree.txt");
 
-    StringProperty baseURL = new SimpleStringProperty(new File("").getAbsolutePath());
+    private final StringProperty baseURL = new SimpleStringProperty(new File("").getAbsolutePath());
 
-    StringProperty fullURL = new SimpleStringProperty(baseURL.getValue() + "\\" + newFileName.getValue());
+    public StringProperty fullURL = new SimpleStringProperty(baseURL.getValue() + "\\" + newFileName.getValue());
 
 
     @FXML
@@ -56,6 +58,7 @@ public class NewMenuItemController implements Initializable {
         try {
             File newFile = new File(fullURL.getValue());
             if (newFile.createNewFile()) {
+                isFileCreated = true;
                 System.out.println("File created: " + newFile.getName());
                 Stage stage = (Stage) okButton.getScene().getWindow();
                 stage.close();
@@ -102,5 +105,17 @@ public class NewMenuItemController implements Initializable {
         fullURL.addListener((v, oldValue, newValue) -> {
             pathLabel.setText(fullURL.getValue());
         });
+    }
+
+    public String getFullURL() {
+        return fullURL.get();
+    }
+
+    public StringProperty fullURLProperty() {
+        return fullURL;
+    }
+
+    public boolean isFileCreated() {
+        return isFileCreated;
     }
 }

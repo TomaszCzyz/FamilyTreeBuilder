@@ -1,7 +1,8 @@
-package app.mainView.mainViewSegments;
+package app.mainView.mainViewSegments.leftPanel;
 
 import app.addFamilyMember.AddMemberController;
 import app.mainView.MainViewController;
+import app.mainView.mainViewSegments.MainViewSegment;
 import basics.FamilyMember;
 import basics.PannableCanvas;
 import com.sun.tools.javac.Main;
@@ -19,11 +20,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.*;
-import java.time.chrono.*;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-public class LeftPanelController implements Initializable {
+public class LeftPanelController extends MainViewSegment implements Initializable {
 
     @FXML
     public Button addButton;
@@ -34,9 +34,9 @@ public class LeftPanelController implements Initializable {
     @FXML
     public VBox leftPanelVBox;
 
-    //    private MainViewController mainViewController;    //nie wiem czy nie byloby lepiej odwolywac sie mainViewController.getCanvasController zamiast uchwytu do canvasContorller
-    private CanvasController canvasController;
-
+    public LeftPanelController() {
+        injectMainViewController(mainViewController);
+    }
 
     public void handleAddMemberButtonAction() {
 
@@ -53,6 +53,7 @@ public class LeftPanelController implements Initializable {
             controller.firstNameProperty().addListener((v, oldValue, newValue) -> familyMember.setFirstName(newValue));
             controller.secondNameProperty().addListener((v, oldValue, newValue) -> familyMember.setSecondName(newValue));
             controller.lastNameProperty().addListener((v, oldValue, newValue) -> familyMember.setLastName(newValue));
+            controller.birthDateProperty().addListener((v, oldValue, newValue) -> familyMember.setBirthDate(LocalDate.parse(newValue)));
             controller.notesProperty().addListener((v, oldValue, newValue) -> familyMember.setNotes(newValue));
 
             Stage stage = new Stage();
@@ -65,22 +66,14 @@ public class LeftPanelController implements Initializable {
         }
 
         if (!familyMember.getFirstName().isEmpty()) {
-            MainViewController.familyMembersArrayList.add(familyMember);
-            canvasController.addMemberToBoard(familyMember, 100, 100);
-            MainViewController.printFamilyMembersArrayList();
+            mainViewController.getFamilyMembersArrayList().add(familyMember);
+            mainViewController.getCanvasController().addMemberToBoard(familyMember, 100, 100);
+            mainViewController.printFamilyMembersArrayList();
         } else {
             System.out.println("Nope\n");
         }
         addButton.setDisable(false);
     }
-
-    public void injectCanvasController(CanvasController canvasController) {
-        this.canvasController = canvasController;
-    }
-
-//    public void injectMainViewController(MainViewController mainViewController) {
-//        this.mainViewController = mainViewController;
-//    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

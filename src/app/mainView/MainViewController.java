@@ -1,6 +1,10 @@
 package app.mainView;
 
-import app.mainView.mainViewSegments.*;
+import app.mainView.mainViewSegments.bottom.BottomController;
+import app.mainView.mainViewSegments.canvas.CanvasController;
+import app.mainView.mainViewSegments.leftPanel.LeftPanelController;
+import app.mainView.mainViewSegments.menuBar.MenuBarController;
+import app.mainView.mainViewSegments.rightPanel.RightPanelController;
 import basics.FamilyMember;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,7 +17,8 @@ import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
 
-    public static List<FamilyMember> familyMembersArrayList;
+    private final List<FamilyMember> familyMembersArrayList;
+
 
     @FXML
     public BorderPane borderPane;
@@ -28,7 +33,11 @@ public class MainViewController implements Initializable {
     @FXML
     private BottomController bottomController;
 
-    public static void printFamilyMembersArrayList() {
+    public MainViewController() {
+        familyMembersArrayList = new ArrayList<>();
+    }
+
+    public void printFamilyMembersArrayList() {
         System.out.println("[ ");
         for (var member : familyMembersArrayList) {
             System.out.println(member);
@@ -63,11 +72,11 @@ public class MainViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        leftPanelController.injectCanvasController(canvasController);
-//        leftPanelController.injectMainViewController(this);
-//        canvasController.injectMainViewController(this);
-
-        familyMembersArrayList = new ArrayList<>();
+        menuBarController.injectMainViewController(this);
+        leftPanelController.injectMainViewController(this);
+        canvasController.injectMainViewController(this);
+        rightPanelController.injectMainViewController(this);
+        bottomController.injectMainViewController(this);
 
     }
 }

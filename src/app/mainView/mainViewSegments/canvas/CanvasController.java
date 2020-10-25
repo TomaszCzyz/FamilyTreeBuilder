@@ -1,11 +1,11 @@
-package app.mainView.mainViewSegments;
+package app.mainView.mainViewSegments.canvas;
 
 import app.mainView.MainViewController;
+import app.mainView.mainViewSegments.MainViewSegment;
 import basics.FamilyMember;
 import basics.NodeGestures;
 import basics.PannableCanvas;
 import basics.SceneGestures;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
@@ -14,21 +14,17 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Label;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
-public class CanvasController implements Initializable {
-
-    private MainViewController mainViewController;
+public class CanvasController extends MainViewSegment implements Initializable {
 
     @FXML
     public AnchorPane anchorPane;
@@ -36,7 +32,7 @@ public class CanvasController implements Initializable {
     @FXML
     public PannableCanvas pannableCanvas;
 
-        HashMap<FamilyMember, Point2D.Float> shapesOnBoardArrayList = new HashMap<>();
+//    private HashMap<FamilyMember, Point2D.Float> shapesOnBoardArrayList = new HashMap<>();
 
 
     public void addMemberToBoard(FamilyMember familyMember, float x, float y) {
@@ -65,7 +61,7 @@ public class CanvasController implements Initializable {
                 "secondname: " + familyMember.getSecondName() + "\n" +
                 "-----------------------------"); //it determines min rectangle width
 
-        //instead of this, better make bounds for text length
+        //instead of this, better make bounds for text length (otherwise rectangle can be to big)
         rectangle.widthProperty().bind(personalDataLabel.widthProperty());
 
         pannableCanvas.getChildren().addAll(rectangle, personalDataLabel);
