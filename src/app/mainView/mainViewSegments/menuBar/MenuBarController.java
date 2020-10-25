@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+//some changes for commit...
 public class MenuBarController extends MainViewSegment implements Initializable {
 
     private String saveURL;
