@@ -1,35 +1,39 @@
 package basics;
 
+import com.sun.jdi.ShortValue;
+
 import java.time.LocalDate;
+import java.util.*;
 
 public class FamilyMember {
 
+    private final String id;
+
     private String firstName;
-
     private String secondName;
-
     private String lastName;
-
     private LocalDate birthDate;
-
     private String notes;
 
+
     public FamilyMember() {
-        firstName = "";
-        secondName = "";
-        lastName = "";
-        birthDate = LocalDate.of(1,1,1);
-//        birthDate = LocalDate.ofEpochDay(1);
-        notes = "";
+        this.id = UUID.randomUUID().toString();
+        this.firstName = "";
+        this.secondName = "";
+        this.lastName = "";
+        this.birthDate = LocalDate.of(1,1,1);
+        this.notes = "";
     }
 
     public FamilyMember(String firstName, String secondName, String lastName, LocalDate birthDate, String notes) {
+        this.id = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.secondName = secondName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.notes = notes;
     }
+
 
     @Override
     public String toString() {
@@ -72,5 +76,9 @@ public class FamilyMember {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getId() {
+        return id;
     }
 }

@@ -1,23 +1,20 @@
 package app.mainView.mainViewSegments.canvas;
 
-import app.mainView.MainViewController;
 import app.mainView.mainViewSegments.MainViewSegment;
 import basics.FamilyMember;
 import basics.NodeGestures;
 import basics.PannableCanvas;
 import basics.SceneGestures;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.control.Label;
 
 import java.awt.geom.Point2D;
 import java.net.URL;
@@ -34,18 +31,17 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
 //    private HashMap<FamilyMember, Point2D.Float> shapesOnBoardArrayList = new HashMap<>();
 
+    public  void addMemberToBoard(FamilyMember familyMember) {
+        addMemberToBoard(familyMember, 0f, 0f);
+    }
 
-    public void addMemberToBoard(FamilyMember familyMember, float x, float y) {
+    public void addMemberToBoard(FamilyMember familyMember, float posX, float posY) {
 
         NodeGestures nodeGestures = new NodeGestures(pannableCanvas);
 
-        double initialPosition = 20d;
-        DoubleProperty minWidth = new SimpleDoubleProperty(150);
-
         Rectangle rectangle = new Rectangle(100, 50);
-//        rectangle.set
-        rectangle.setTranslateX(initialPosition);
-        rectangle.setTranslateY(initialPosition);
+        rectangle.setTranslateX(posX);
+        rectangle.setTranslateY(posY);
         rectangle.setStroke(Color.BLUE);
         rectangle.setFill(Color.BLUE.deriveColor(1, 1, 1, 0.5));
         rectangle.addEventFilter(MouseEvent.MOUSE_PRESSED, nodeGestures.getOnMousePressedEventHandler());
@@ -53,8 +49,8 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
         Label personalDataLabel = new Label();
         personalDataLabel.setMouseTransparent(true);
-        personalDataLabel.setTranslateX(initialPosition + 10);
-        personalDataLabel.setTranslateY(initialPosition + 10);
+        personalDataLabel.setTranslateX(posX + 10);
+        personalDataLabel.setTranslateY(posY + 10);
         personalDataLabel.translateXProperty().bind(rectangle.translateXProperty());
         personalDataLabel.translateYProperty().bind(rectangle.translateYProperty());
         personalDataLabel.setText(familyMember.getFirstName() + " " + familyMember.getLastName() + "\n" +

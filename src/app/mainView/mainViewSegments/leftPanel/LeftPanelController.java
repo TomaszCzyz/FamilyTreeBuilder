@@ -1,20 +1,14 @@
 package app.mainView.mainViewSegments.leftPanel;
 
 import app.addFamilyMember.AddMemberController;
-import app.mainView.MainViewController;
 import app.mainView.mainViewSegments.MainViewSegment;
 import basics.FamilyMember;
-import basics.PannableCanvas;
-import com.sun.tools.javac.Main;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -22,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 public class LeftPanelController extends MainViewSegment implements Initializable {
 
@@ -66,11 +61,11 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
         }
 
         if (!familyMember.getFirstName().isEmpty()) {
-            mainViewController.getFamilyMembersArrayList().add(familyMember);
+            mainViewController.getFamilyMembersHashMap().put(familyMember.getId(), familyMember);
             mainViewController.getCanvasController().addMemberToBoard(familyMember, 100, 100);
-            mainViewController.printFamilyMembersArrayList();
+            mainViewController.printFamilyMembersHashMap();
         } else {
-            System.out.println("Nope\n");
+            System.out.println("No new family member added\n");
         }
         addButton.setDisable(false);
     }

@@ -37,7 +37,7 @@ public class NewMenuItemController implements Initializable {
 
     private final StringProperty baseURL = new SimpleStringProperty(new File("").getAbsolutePath());
 
-    public StringProperty fullURL = new SimpleStringProperty(baseURL.getValue() + "\\" + newFileName.getValue());
+    private final StringProperty fullURL = new SimpleStringProperty(baseURL.getValue() + "\\" + newFileName.getValue());
 
 
     @FXML

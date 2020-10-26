@@ -11,13 +11,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainViewController implements Initializable {
 
-    private final List<FamilyMember> familyMembersArrayList;
+    private HashMap<String, FamilyMember> familyMembersHashMap = new HashMap<>();
 
 
     @FXML
@@ -33,20 +31,23 @@ public class MainViewController implements Initializable {
     @FXML
     private BottomController bottomController;
 
+
     public MainViewController() {
-        familyMembersArrayList = new ArrayList<>();
+        familyMembersHashMap = new HashMap<>();
     }
 
-    public void printFamilyMembersArrayList() {
+
+    public void printFamilyMembersHashMap() {
         System.out.println("[ ");
-        for (var member : familyMembersArrayList) {
+        for (var member : familyMembersHashMap.values()) {
             System.out.println(member);
         }
         System.out.println(" ]");
     }
 
-    public List<FamilyMember> getFamilyMembersArrayList() {
-        return familyMembersArrayList;
+
+    public Map<String, FamilyMember> getFamilyMembersHashMap() {
+        return familyMembersHashMap;
     }
 
     public MenuBarController getMenuBarController() {
@@ -77,7 +78,6 @@ public class MainViewController implements Initializable {
         canvasController.injectMainViewController(this);
         rightPanelController.injectMainViewController(this);
         bottomController.injectMainViewController(this);
-
     }
 }
 

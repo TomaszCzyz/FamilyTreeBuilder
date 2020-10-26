@@ -2,9 +2,7 @@ package app.mainView.mainViewSegments.menuBar;
 
 import app.mainView.mainViewSegments.MainViewSegment;
 import app.newMenuItem.NewMenuItemController;
-import basics.AlertBox;
 import basics.ConfirmBox;
-import basics.FamilyMember;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -22,7 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-//some changes for commit...
+
 public class MenuBarController extends MainViewSegment implements Initializable {
 
     private String saveURL;
@@ -35,7 +33,7 @@ public class MenuBarController extends MainViewSegment implements Initializable 
 
     public MenuBarController() {
         ifCanSave = new SimpleBooleanProperty(false);
-        saveURL = "";// = new File("").getAbsolutePath() + "\\new.txt";
+        saveURL = "";
     }
 
     @FXML
@@ -66,7 +64,7 @@ public class MenuBarController extends MainViewSegment implements Initializable 
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
         String url = fileChooser.showOpenDialog(saveButton.getScene().getWindow()).toString();
         if(url != null) {
-            if(!mainViewController.getFamilyMembersArrayList().isEmpty()) {
+            if(!mainViewController.getFamilyMembersHashMap().isEmpty()) {
                 boolean answer = ConfirmBox.display("Warning", "Open family tree will be close.\n Are you sure you want to continue?");
                 if(!answer) {
                     return;
@@ -80,12 +78,8 @@ public class MenuBarController extends MainViewSegment implements Initializable 
         saveURL = url;
         ifCanSave.setValue(true);
 
-        mainViewController.getFamilyMembersArrayList().clear();
+        mainViewController.getFamilyMembersHashMap().clear();
         mainViewController.getCanvasController().getPannableCanvas().getChildren().clear();
-
-        System.out.println(mainViewController.getCanvasController().getPannableCanvas().getChildren().toString());
-
-
     }
 
     @FXML
@@ -96,20 +90,23 @@ public class MenuBarController extends MainViewSegment implements Initializable 
 
     @FXML
     public void handleSaveButtonAction() throws IOException {
-        FileWriter writer = new FileWriter(saveURL);
-
-        StringBuilder csvString = new StringBuilder();
-
-        for(FamilyMember familyMember : mainViewController.getFamilyMembersArrayList()) {
-            csvString.append(familyMember.toString()).append(";");
+        if(!ifCanSave.getValue()) {
+            handleNewMenuItemAction();
         }
+        if(ifCanSave.getValue()) {
+            FileWriter writer = new FileWriter(saveURL);
+            StringBuilder csvString = new StringBuilder();
 
-        writer.write(csvString.toString());
-        writer.close();
+            mainViewController.getFamilyMembersHashMap().forEach((key, value) ->
+                    csvString.append(key).append(";").append(value.toString()).append(";"));
+
+            writer.write(csvString.toString());
+            writer.close();
+        }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        saveButton.disableProperty().bind(ifCanSave.not());
+//        saveButton.disableProperty().bind(ifCanSave.not());
     }
 }
