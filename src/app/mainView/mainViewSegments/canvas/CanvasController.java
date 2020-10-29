@@ -48,12 +48,16 @@ public class CanvasController extends MainViewSegment implements Initializable {
         NodeGestures nodeGestures = new NodeGestures(pannableCanvas);
 
         Rectangle rectangle = new Rectangle(100, 50);
+        rectangle.setId(familyMember.getId());
         rectangle.setTranslateX(posX);
         rectangle.setTranslateY(posY);
         rectangle.setStroke(Color.BLUE);
         rectangle.setFill(Color.BLUE.deriveColor(1, 1, 1, 0.5));
+        //event order matters!
         rectangle.addEventFilter(MouseEvent.MOUSE_PRESSED, nodeGestures.getOnMousePressedEventHandler());
         rectangle.addEventFilter(MouseEvent.MOUSE_DRAGGED, nodeGestures.getOnMouseDraggedEventHandler());
+        rectangle.addEventFilter(MouseEvent.MOUSE_RELEASED, nodeGestures.getOnMouseReleasedEventHandler());
+        rectangle.addEventFilter(MouseEvent.MOUSE_CLICKED, nodeGestures.getOnMouseClickedEventHandler());
 
         Label personalDataLabel = new Label();
         personalDataLabel.setId(familyMember.getId());

@@ -56,7 +56,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
             Stage stage = new Stage();
             stage.setTitle("Add new family member");
-            stage.setScene(new Scene(root, 600, 400));
+            stage.setScene(new Scene(root));
             stage.showAndWait();
         }
         catch (IOException e) {
