@@ -13,21 +13,20 @@ public class PannableCanvas extends Pane {
 
     DoubleProperty myScale = new SimpleDoubleProperty(1.0);
 
-
     public PannableCanvas() {
-        setPrefSize(600, 600);
-
         // add scale transform
         scaleXProperty().bind(myScale);
         scaleYProperty().bind(myScale);
 
+
+
         // logging
-        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            System.out.println(
-                    "canvas event: " + (((event.getSceneX() - getBoundsInParent().getMinX()) / getScale()) + ", scale: " + getScale())
-            );
-            System.out.println("canvas bounds: " + getBoundsInParent());
-        });
+//        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+//            System.out.println(
+//                    "canvas event: " + (((event.getSceneX() - getBoundsInParent().getMinX()) / getScale()) + ", scale: " + getScale())
+//            );
+//            System.out.println("canvas bounds: " + getBoundsInParent());
+//        });
     }
 
 
@@ -65,6 +64,7 @@ public class PannableCanvas extends Pane {
         getChildren().add(grid);
         grid.toBack();
     }
+
 
     public double getScale() {
         return myScale.get();

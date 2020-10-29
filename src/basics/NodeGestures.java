@@ -2,6 +2,7 @@ package basics;
 
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -13,8 +14,8 @@ public class NodeGestures {
 
     PannableCanvas canvas;
 
-    public NodeGestures(PannableCanvas canvas) {
-        this.canvas = canvas;
+    public NodeGestures(PannableCanvas pannableCanvas) {
+        this.canvas = pannableCanvas;
     }
 
     public EventHandler<MouseEvent> getOnMousePressedEventHandler() {

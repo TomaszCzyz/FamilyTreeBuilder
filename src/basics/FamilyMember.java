@@ -1,7 +1,5 @@
 package basics;
 
-import com.sun.jdi.ShortValue;
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -25,13 +23,17 @@ public class FamilyMember {
         this.notes = "";
     }
 
-    public FamilyMember(String firstName, String secondName, String lastName, LocalDate birthDate, String notes) {
-        this.id = UUID.randomUUID().toString();
+    public FamilyMember(String id, String firstName, String secondName, String lastName, LocalDate birthDate, String notes) {
+        this.id = id;
         this.firstName = firstName;
         this.secondName = secondName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.notes = notes;
+    }
+
+    public FamilyMember(String firstName, String secondName, String lastName, LocalDate birthDate, String notes) {
+        this(UUID.randomUUID().toString(), firstName, secondName, lastName, birthDate, notes);
     }
 
 

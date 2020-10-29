@@ -3,6 +3,8 @@ package app.mainView.mainViewSegments.leftPanel;
 import app.addFamilyMember.AddMemberController;
 import app.mainView.mainViewSegments.MainViewSegment;
 import basics.FamilyMember;
+import basics.PannableCanvas;
+import basics.SceneGestures;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,7 +18,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
-import java.util.UUID;
+
 
 public class LeftPanelController extends MainViewSegment implements Initializable {
 
@@ -33,6 +35,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
         injectMainViewController(mainViewController);
     }
 
+    @FXML
     public void handleAddMemberButtonAction() {
 
         addButton.setDisable(true);
@@ -68,6 +71,32 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
             System.out.println("No new family member added\n");
         }
         addButton.setDisable(false);
+    }
+
+    @FXML
+    public void handleZoomInButtonAction() {
+        PannableCanvas pannableCanvas = mainViewController.getCanvasController().getPannableCanvas();
+        double scale = pannableCanvas.getScale();
+        scale *= Math.pow(1.002, 40.0);
+
+        if (scale >= SceneGestures.getMaxScale()) {
+            scale = SceneGestures.getMaxScale();
+        }
+
+        pannableCanvas.setScale(scale);
+    }
+
+    @FXML
+    public void handleZoomOutButtonAction() {
+        PannableCanvas pannableCanvas = mainViewController.getCanvasController().getPannableCanvas();
+        double scale = pannableCanvas.getScale();
+        scale *= Math.pow(1.002, -40.0);
+
+        if (scale <= SceneGestures.getMinScale()) {
+            scale = SceneGestures.getMinScale();
+        }
+
+        pannableCanvas.setScale(scale);
     }
 
     @Override

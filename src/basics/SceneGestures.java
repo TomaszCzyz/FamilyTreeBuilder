@@ -16,22 +16,6 @@ public class SceneGestures {
 
     PannableCanvas canvas;
 
-    public SceneGestures(PannableCanvas canvas) {
-        this.canvas = canvas;
-    }
-
-    public EventHandler<MouseEvent> getOnMousePressedEventHandler() {
-        return onMousePressedEventHandler;
-    }
-
-    public EventHandler<MouseEvent> getOnMouseDraggedEventHandler() {
-        return onMouseDraggedEventHandler;
-    }
-
-    public EventHandler<ScrollEvent> getOnScrollEventHandler() {
-        return onScrollEventHandler;
-    }
-
     private final EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {
 
         public void handle(MouseEvent event) {
@@ -90,4 +74,30 @@ public class SceneGestures {
             event.consume();
         }
     };
+
+
+    public SceneGestures(PannableCanvas canvas) {
+        this.canvas = canvas;
+    }
+
+
+    public EventHandler<MouseEvent> getOnMousePressedEventHandler() {
+        return onMousePressedEventHandler;
+    }
+
+    public EventHandler<MouseEvent> getOnMouseDraggedEventHandler() {
+        return onMouseDraggedEventHandler;
+    }
+
+    public EventHandler<ScrollEvent> getOnScrollEventHandler() {
+        return onScrollEventHandler;
+    }
+
+    public static double getMaxScale() {
+        return MAX_SCALE;
+    }
+
+    public static double getMinScale() {
+        return MIN_SCALE;
+    }
 }

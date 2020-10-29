@@ -12,8 +12,8 @@
          <font>
             <Font size="10.0" />
          </font></Button>
-      <Button fx:id="zoomInButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="+" />
-      <Button fx:id="zoomOutButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="-" />
+      <Button fx:id="zoomInButton" onAction="#handleZoomInButtonAction" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="+" />
+      <Button fx:id="zoomOutButton" onAction="#handleZoomOutButtonAction" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="-" />
     </children>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

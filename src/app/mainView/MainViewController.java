@@ -78,6 +78,7 @@ public class MainViewController implements Initializable {
         canvasController.injectMainViewController(this);
         rightPanelController.injectMainViewController(this);
         bottomController.injectMainViewController(this);
+
     }
 }
 
