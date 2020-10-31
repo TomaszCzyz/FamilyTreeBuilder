@@ -2,7 +2,6 @@ package basics;
 
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
@@ -15,14 +14,12 @@ public class NodeGestures {
 
     PannableCanvas canvas;
 
-    private String currentNode = null;
-
     private long timePressed;
     private long timeReleased;
 
     private final DragContext nodeDragContext = new DragContext();
 
-    private final EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {
+    private final EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<>() {
         @Override
         public void handle(MouseEvent event) {
 
@@ -42,17 +39,17 @@ public class NodeGestures {
         }
     };
 
-    private final EventHandler<MouseEvent> onMouseDraggedEventHandler = new EventHandler<MouseEvent>() {
+    private final EventHandler<MouseEvent> onMouseDraggedEventHandler = new EventHandler<>() {
         @Override
         public void handle(MouseEvent event) {
             // left mouse button => dragging
             if (!event.isPrimaryButtonDown())
                 return;
 
+//            canvas.setWasDragged(true);
+
             double scale = canvas.getScale();
-
             Node node = (Node) event.getSource();
-
             node.setTranslateX(nodeDragContext.translateAnchorX + ((event.getSceneX() - nodeDragContext.mouseAnchorX) / scale));
             node.setTranslateY(nodeDragContext.translateAnchorY + ((event.getSceneY() - nodeDragContext.mouseAnchorY) / scale));
 
@@ -60,16 +57,17 @@ public class NodeGestures {
         }
     };
 
-    private final EventHandler<MouseEvent> getOnMouseReleasedEventHandler = new EventHandler<MouseEvent>() {
+    private final EventHandler<MouseEvent> onMouseReleasedEventHandler = new EventHandler<>() {
         @Override
         public void handle(MouseEvent event) {
 
             timeReleased = currentTimeMillis();
+
         }
     };
 
 
-    private final EventHandler<MouseEvent> onMouseClickedEventHandler = new EventHandler<MouseEvent>() {
+    private final EventHandler<MouseEvent> onMouseClickedEventHandler = new EventHandler<>() {
         @Override
         public void handle(MouseEvent event) {
 
@@ -78,7 +76,8 @@ public class NodeGestures {
 
             if(mousePressedDuration() < 200) {
                 Node node = (Node) event.getSource();
-                currentNode = node.getId();
+
+                canvas.setCurrentNode(node.getId());
             }
         }
     };
@@ -89,7 +88,7 @@ public class NodeGestures {
     }
 
     private long mousePressedDuration() {
-        return this.timeReleased - this.timePressed;
+        return timeReleased - timePressed;
     }
 
     public EventHandler<MouseEvent> getOnMousePressedEventHandler() {
@@ -105,6 +104,6 @@ public class NodeGestures {
     }
 
     public EventHandler<MouseEvent> getOnMouseReleasedEventHandler() {
-        return getOnMouseReleasedEventHandler;
+        return onMouseReleasedEventHandler;
     }
 }

@@ -4,22 +4,24 @@
 
 
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0"
             xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="app.mainView.MainViewController">
     <top>
         <fx:include fx:id="menuBar" source="mainViewSegments/menuBar/MenuBar.fxml"/>
     </top>
-    <right>
-        <fx:include fx:id="rightPanel" source="mainViewSegments/rightPanel/RightPanel.fxml"/>
-    </right>
+    <center>
+        <HBox fx:id="centerHbox" alignment="TOP_RIGHT">
+            <fx:include fx:id="canvas" source="mainViewSegments/canvas/Canvas.fxml"/>
+            <fx:include fx:id="rightPanel" source="mainViewSegments/rightPanel/RightPanel.fxml"/>
+        </HBox>
+    </center>
     <bottom>
         <fx:include fx:id="bottom" source="mainViewSegments/bottom/Bottom.fxml"/>
     </bottom>
     <left>
         <fx:include fx:id="leftPanel" source="mainViewSegments/leftPanel/LeftPanel.fxml"/>
     </left>
-    <center>
-        <fx:include fx:id="canvas" source="mainViewSegments/canvas/Canvas.fxml"/>
-    </center>
 </BorderPane>

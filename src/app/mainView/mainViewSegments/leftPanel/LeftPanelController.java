@@ -2,6 +2,7 @@ package app.mainView.mainViewSegments.leftPanel;
 
 import app.addFamilyMember.AddMemberController;
 import app.mainView.mainViewSegments.MainViewSegment;
+import basics.AlertBox;
 import basics.FamilyMember;
 import basics.PannableCanvas;
 import basics.SceneGestures;
@@ -23,13 +24,15 @@ import java.util.ResourceBundle;
 public class LeftPanelController extends MainViewSegment implements Initializable {
 
     @FXML
+    public VBox leftPanelVBox;
+    @FXML
     public Button addButton;
     @FXML
     public Button zoomInButton;
     @FXML
     public Button zoomOutButton;
     @FXML
-    public VBox leftPanelVBox;
+    public Button delButton;
 
     public LeftPanelController() {
         injectMainViewController(mainViewController);
@@ -74,6 +77,18 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
     }
 
     @FXML
+    public void handleDelMemberButtonAction() {
+        String famMemId = mainViewController.getCanvasController().pannableCanvas.getCurrentNode();
+        if(famMemId == null) {
+            AlertBox.display("Delete", "Choose family member from board first!");
+        } else {
+            mainViewController.getFamilyMembersHashMap().remove(famMemId);
+            mainViewController.getCanvasController().delBoxFromCanvas(famMemId);
+            mainViewController.getRightPanelController().setVisible(false);
+        }
+    }
+
+        @FXML
     public void handleZoomInButtonAction() {
         PannableCanvas pannableCanvas = mainViewController.getCanvasController().getPannableCanvas();
         double scale = pannableCanvas.getScale();

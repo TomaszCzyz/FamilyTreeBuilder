@@ -1,24 +1,35 @@
 package basics;
 
 import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+
+import static java.lang.System.currentTimeMillis;
 
 /**
  * Listeners for making the scene's canvas draggable and zoomable
  */
 public class SceneGestures {
 
+    PannableCanvas canvas;
+
     private static final double MAX_SCALE = 5.0d;
     private static final double MIN_SCALE = .1d;
 
+    private long timePressed;
+    private long timeReleased;
+
     private final DragContext sceneDragContext = new DragContext();
 
-    PannableCanvas canvas;
-
     private final EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {
-
+        @Override
         public void handle(MouseEvent event) {
+
+            timePressed = currentTimeMillis();
+
             // right mouse button => panning
             if (!event.isSecondaryButtonDown())
                 return;
@@ -44,6 +55,30 @@ public class SceneGestures {
         }
     };
 
+    private final EventHandler<MouseEvent> onMouseReleasedEventHandler = new EventHandler<>() {
+        @Override
+        public void handle(MouseEvent event) {
+
+            timeReleased = currentTimeMillis();
+        }
+    };
+
+    private final EventHandler<MouseEvent> onMouseClickedEventHandler = new EventHandler<>() {
+        @Override
+        public void handle(MouseEvent event) {
+
+            if (event.getButton() != MouseButton.PRIMARY)
+                return;
+
+            if(mousePressedDuration() < 200) {
+                canvas.setCurrentNode(null);
+            }
+        }
+    };
+
+    private long mousePressedDuration() {
+        return timeReleased - timePressed;
+    }
     /**
      * Mouse wheel handler: zoom to pivot point
      */
@@ -80,13 +115,20 @@ public class SceneGestures {
         this.canvas = canvas;
     }
 
-
     public EventHandler<MouseEvent> getOnMousePressedEventHandler() {
         return onMousePressedEventHandler;
     }
 
     public EventHandler<MouseEvent> getOnMouseDraggedEventHandler() {
         return onMouseDraggedEventHandler;
+    }
+
+    public EventHandler<MouseEvent> getOnMouseReleasedEventHandler() {
+        return onMouseReleasedEventHandler;
+    }
+
+    public EventHandler<MouseEvent> getOnMouseClickedEventHandler() {
+        return onMouseClickedEventHandler;
     }
 
     public EventHandler<ScrollEvent> getOnScrollEventHandler() {

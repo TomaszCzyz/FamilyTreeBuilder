@@ -2,23 +2,29 @@ package basics;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class PannableCanvas extends Pane {
+
+public class PannableCanvas extends Pane implements Initializable {
 
     DoubleProperty myScale = new SimpleDoubleProperty(1.0);
+
+    private final StringProperty currentNode = new SimpleStringProperty(null);
+    private boolean wasDragged = false;
 
     public PannableCanvas() {
         // add scale transform
         scaleXProperty().bind(myScale);
         scaleYProperty().bind(myScale);
-
-
 
         // logging
 //        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
@@ -77,6 +83,31 @@ public class PannableCanvas extends Pane {
     public void setPivot(double x, double y) {
         setTranslateX(getTranslateX() - x);
         setTranslateY(getTranslateY() - y);
+    }
+
+    public String getCurrentNode() {
+        return currentNode.get();
+    }
+
+    public StringProperty currentNodeProperty() {
+        return currentNode;
+    }
+
+    public void setCurrentNode(String currentNode) {
+        this.currentNode.set(currentNode);
+    }
+
+    public boolean getWasDragged() {
+        return wasDragged;
+    }
+
+    public void setWasDragged(boolean ifDragged) {
+        this.wasDragged = ifDragged;
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        System.out.println("adsa");
     }
 }
 

@@ -8,12 +8,17 @@ import app.mainView.mainViewSegments.rightPanel.RightPanelController;
 import basics.FamilyMember;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
 import java.util.*;
 
 public class MainViewController implements Initializable {
+
+    @FXML
+    public HBox centerHbox;
 
     private HashMap<String, FamilyMember> familyMembersHashMap = new HashMap<>();
 
@@ -70,6 +75,16 @@ public class MainViewController implements Initializable {
         return bottomController;
     }
 
+    public void clipChildren(Region region) {
+        final Rectangle clip = new Rectangle();
+
+        region.setClip(clip);
+
+        region.layoutBoundsProperty().addListener((v, oldValue, newValue) -> {
+            clip.setWidth(newValue.getWidth());
+            clip.setHeight(newValue.getHeight());
+        });
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -79,6 +94,26 @@ public class MainViewController implements Initializable {
         rightPanelController.injectMainViewController(this);
         bottomController.injectMainViewController(this);
 
+        centerHbox.setBorder(new Border(new BorderStroke(Color.BLUE,
+                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        canvasController.anchorPane.setBorder(new Border(new BorderStroke(Color.BLACK,
+                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        canvasController.pannableCanvas.setBorder(new Border(new BorderStroke(Color.RED,
+                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+
+        clipChildren(centerHbox);
+
+        rightPanelController.setVisible(false);
+
+        canvasController.getPannableCanvas().currentNodeProperty().addListener((v, oldValue, newValue) -> {
+            if(newValue != null) {
+                FamilyMember familyMember = familyMembersHashMap.get(newValue);
+                rightPanelController.firstNameText.setText(familyMember.getFirstName());
+                rightPanelController.secondNameText.setText(familyMember.getSecondName());
+                rightPanelController.lastNameText.setText(familyMember.getLastName());
+                rightPanelController.birthDateText.setText(String.valueOf(familyMember.getBirthDate()));
+            }
+        });
     }
 }
 

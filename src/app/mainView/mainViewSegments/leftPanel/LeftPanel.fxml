@@ -11,7 +11,13 @@
         <Button fx:id="addButton" mnemonicParsing="false" onAction="#handleAddMemberButtonAction" prefHeight="35.0" prefWidth="35.0" text="Add">
          <font>
             <Font size="10.0" />
-         </font></Button>
+         </font>
+        </Button>
+        <Button fx:id="delButton" mnemonicParsing="false" onAction="#handleDelMemberButtonAction" prefHeight="35.0" prefWidth="35.0" text="Del">
+            <font>
+                <Font size="10.0" />
+            </font>
+        </Button>
       <Button fx:id="zoomInButton" onAction="#handleZoomInButtonAction" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="+" />
       <Button fx:id="zoomOutButton" onAction="#handleZoomOutButtonAction" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="-" />
     </children>

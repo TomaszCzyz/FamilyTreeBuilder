@@ -36,6 +36,10 @@ public class FamilyMember {
         this(UUID.randomUUID().toString(), firstName, secondName, lastName, birthDate, notes);
     }
 
+//    public FamilyMember(FamilyMember f) {
+//        this(f.id, f.firstName, f.secondName, f.lastName, f.birthDate, f.notes);
+//    }
+
 
     @Override
     public String toString() {

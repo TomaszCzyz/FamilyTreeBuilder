@@ -2,15 +2,17 @@ package app.mainView.mainViewSegments.canvas;
 
 import app.mainView.mainViewSegments.MainViewSegment;
 import basics.*;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -25,10 +27,14 @@ public class CanvasController extends MainViewSegment implements Initializable {
     @FXML
     public PannableCanvas pannableCanvas;
 
+
 //    private HashMap<FamilyMember, Point2D.Float> shapesCordsArrayList = new HashMap<>();
 
+    public void start() {
+        //
+    }
 
-    public  void addMemberToBoard(FamilyMember familyMember) {
+    public void addMemberToBoard(FamilyMember familyMember) {
         addMemberToBoard(familyMember, 0f, 0f);
     }
 
@@ -37,10 +43,11 @@ public class CanvasController extends MainViewSegment implements Initializable {
         addBoxToBoard(familyMember, posX, posY);
 
         SceneGestures sceneGestures = new SceneGestures(pannableCanvas);
-        Scene scene = (Scene) pannableCanvas.getScene();
-        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
-        scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
-        scene.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
+        anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
+        anchorPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
+        anchorPane.addEventFilter(MouseEvent.MOUSE_RELEASED, sceneGestures.getOnMouseDraggedEventHandler());
+        anchorPane.addEventFilter(MouseEvent.MOUSE_CLICKED, sceneGestures.getOnMouseClickedEventHandler());
+        anchorPane.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
     }
 
     public void addBoxToBoard(FamilyMember familyMember, float posX, float posY) {
@@ -76,16 +83,16 @@ public class CanvasController extends MainViewSegment implements Initializable {
         pannableCanvas.getChildren().addAll(rectangle, personalDataLabel);
     }
 
-    public void clipChildren(Region region) {
-        final Rectangle clip = new Rectangle();
-
-        region.setClip(clip);
-
-        region.layoutBoundsProperty().addListener((ov, oldValue, newValue) -> {
-            clip.setWidth(newValue.getWidth());
-            clip.setHeight(newValue.getHeight());
-        });
+    public void delBoxFromCanvas(String familyMemberId) {
+        for(int i = 0; i < 2; ++i) {    //we need to remove rectangle and label
+            Node node = pannableCanvas.lookup("#" + familyMemberId);
+            if(node != null) {
+                pannableCanvas.getChildren().remove(node);
+            }
+        }
     }
+
+
 
     public PannableCanvas getPannableCanvas() {
         return pannableCanvas;
@@ -93,6 +100,11 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        clipChildren(anchorPane);
+
+
+        pannableCanvas.currentNodeProperty().addListener((v, oldValue, newValue) -> {
+            System.out.println("old: " + oldValue + " new: " + newValue);
+            mainViewController.getRightPanelController().setVisible(newValue != null);
+        });
     }
 }
