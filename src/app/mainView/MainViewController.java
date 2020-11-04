@@ -98,8 +98,6 @@ public class MainViewController implements Initializable {
                 BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         canvasController.anchorPane.setBorder(new Border(new BorderStroke(Color.BLACK,
                 BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        canvasController.pannableCanvas.setBorder(new Border(new BorderStroke(Color.RED,
-                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 
         clipChildren(centerHbox);
 
@@ -107,11 +105,7 @@ public class MainViewController implements Initializable {
 
         canvasController.getPannableCanvas().currentNodeProperty().addListener((v, oldValue, newValue) -> {
             if(newValue != null) {
-                FamilyMember familyMember = familyMembersHashMap.get(newValue);
-                rightPanelController.firstNameText.setText(familyMember.getFirstName());
-                rightPanelController.secondNameText.setText(familyMember.getSecondName());
-                rightPanelController.lastNameText.setText(familyMember.getLastName());
-                rightPanelController.birthDateText.setText(String.valueOf(familyMember.getBirthDate()));
+                rightPanelController.fillRightPanel(familyMembersHashMap.get(newValue));
             }
         });
     }

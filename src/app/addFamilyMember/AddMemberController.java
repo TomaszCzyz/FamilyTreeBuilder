@@ -80,7 +80,7 @@ public class AddMemberController implements Initializable {
         StringBuilder message = new StringBuilder();
 
         //check if all required textfields are given
-        List<TextField> requiredTextFields = List.of(firstNameTextField, lastNameTextField);
+        List<TextField> requiredTextFields = List.of(firstNameTextField);
         for(var textField : requiredTextFields) {
             if(textField.getText().isEmpty()) {
                 message.append("Enter ").append(textField.getId()).append('\n');

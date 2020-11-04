@@ -2,10 +2,7 @@ package app.mainView.mainViewSegments.leftPanel;
 
 import app.addFamilyMember.AddMemberController;
 import app.mainView.mainViewSegments.MainViewSegment;
-import basics.AlertBox;
-import basics.FamilyMember;
-import basics.PannableCanvas;
-import basics.SceneGestures;
+import basics.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -82,9 +79,12 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
         if(famMemId == null) {
             AlertBox.display("Delete", "Choose family member from board first!");
         } else {
-            mainViewController.getFamilyMembersHashMap().remove(famMemId);
-            mainViewController.getCanvasController().delBoxFromCanvas(famMemId);
-            mainViewController.getRightPanelController().setVisible(false);
+            boolean answer = ConfirmBox.display("Delete", "Sure you want to delete family member permanently?");
+            if (answer) {
+                mainViewController.getFamilyMembersHashMap().remove(famMemId);
+                mainViewController.getCanvasController().delBoxFromCanvas(famMemId);
+                mainViewController.getRightPanelController().setVisible(false);
+            }
         }
     }
 

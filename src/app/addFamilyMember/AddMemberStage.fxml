@@ -63,7 +63,7 @@
                   <Button mnemonicParsing="false" text="Add Image" />
                   <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../resources/no_picture.jpg" />
+                        <Image url="@../../resources/no_picture.jpg" />
                      </image>
                   </ImageView>
                   <Label text="Notes:" />

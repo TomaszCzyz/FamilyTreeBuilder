@@ -1,8 +1,6 @@
 package basics;
 
 import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -70,9 +68,12 @@ public class SceneGestures {
             if (event.getButton() != MouseButton.PRIMARY)
                 return;
 
+//            Event.fireEvent(, );
+
             if(mousePressedDuration() < 200) {
                 canvas.setCurrentNode(null);
             }
+
         }
     };
 

@@ -1,18 +1,17 @@
 package app.mainView.mainViewSegments.canvas;
 
 import app.mainView.mainViewSegments.MainViewSegment;
-import basics.*;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import basics.FamilyMember;
+import basics.NodeGestures;
+import basics.PannableCanvas;
+import basics.SceneGestures;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -46,7 +45,8 @@ public class CanvasController extends MainViewSegment implements Initializable {
         anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
         anchorPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
         anchorPane.addEventFilter(MouseEvent.MOUSE_RELEASED, sceneGestures.getOnMouseDraggedEventHandler());
-        anchorPane.addEventFilter(MouseEvent.MOUSE_CLICKED, sceneGestures.getOnMouseClickedEventHandler());
+        //eventHandler is used here because it is important to analyze familyMemberBox event first
+        anchorPane.addEventHandler(MouseEvent.MOUSE_CLICKED, sceneGestures.getOnMouseClickedEventHandler());
         anchorPane.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
     }
 
@@ -77,7 +77,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
                 "secondname: " + familyMember.getSecondName() + "\n" +
                 "-----------------------------"); //it determines min rectangle width
 
-        //instead of this, better make bounds for text length (otherwise rectangle can be to big)
+        //instead of this, better make bounds for text length (otherwise rectangle can be too big)
         rectangle.widthProperty().bind(personalDataLabel.widthProperty());
 
         pannableCanvas.getChildren().addAll(rectangle, personalDataLabel);
@@ -103,7 +103,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
 
         pannableCanvas.currentNodeProperty().addListener((v, oldValue, newValue) -> {
-            System.out.println("old: " + oldValue + " new: " + newValue);
+            System.out.println("new: " + newValue);
             mainViewController.getRightPanelController().setVisible(newValue != null);
         });
     }

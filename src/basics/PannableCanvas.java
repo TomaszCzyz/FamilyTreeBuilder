@@ -18,7 +18,10 @@ public class PannableCanvas extends Pane implements Initializable {
 
     DoubleProperty myScale = new SimpleDoubleProperty(1.0);
 
+    private boolean selectFather = false;
+
     private final StringProperty currentNode = new SimpleStringProperty(null);
+
     private boolean wasDragged = false;
 
     public PannableCanvas() {
@@ -97,12 +100,12 @@ public class PannableCanvas extends Pane implements Initializable {
         this.currentNode.set(currentNode);
     }
 
-    public boolean getWasDragged() {
-        return wasDragged;
+    public boolean isSelectFather() {
+        return selectFather;
     }
 
-    public void setWasDragged(boolean ifDragged) {
-        this.wasDragged = ifDragged;
+    public void setSelectFather(boolean selectFather) {
+        this.selectFather = selectFather;
     }
 
     @Override

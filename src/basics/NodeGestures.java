@@ -76,8 +76,9 @@ public class NodeGestures {
 
             if(mousePressedDuration() < 200) {
                 Node node = (Node) event.getSource();
-
                 canvas.setCurrentNode(node.getId());
+
+            event.consume();
             }
         }
     };

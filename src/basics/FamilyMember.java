@@ -13,6 +13,9 @@ public class FamilyMember {
     private LocalDate birthDate;
     private String notes;
 
+    private String fatherId;
+    private String motherId;
+
 
     public FamilyMember() {
         this.id = UUID.randomUUID().toString();
@@ -86,5 +89,21 @@ public class FamilyMember {
 
     public String getId() {
         return id;
+    }
+
+    public String getFatherId() {
+        return fatherId;
+    }
+
+    public void setFatherId(String fatherId) {
+        this.fatherId = fatherId;
+    }
+
+    public String getMotherId() {
+        return motherId;
+    }
+
+    public void setMotherId(String motherId) {
+        this.motherId = motherId;
     }
 }
