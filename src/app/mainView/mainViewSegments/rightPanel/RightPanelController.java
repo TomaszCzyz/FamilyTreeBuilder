@@ -40,11 +40,18 @@ public class RightPanelController extends MainViewSegment {
     public Button fatherLinkButton;
     @FXML
     public Button motherLinkButton;
+    @FXML
+    public Text spouseText;
+    @FXML
+    public Button spouseLinkButton;
+    @FXML
+    public Button delMotherLinkButton;
 
 
     @FXML
-    public void handlefatherLinkButtonAction() {
+    public void handleMotherLinkButtonAction() {
         PannableCanvas pannableCanvas = mainViewController.getCanvasController().pannableCanvas;
+
         String childId = pannableCanvas.getCurrentNode();
         Rectangle child = (Rectangle) pannableCanvas.lookup("#" + childId);
 
@@ -52,39 +59,104 @@ public class RightPanelController extends MainViewSegment {
         child.setStrokeType(StrokeType.OUTSIDE);
         child.setStrokeWidth(3);
 
-
-        ChangeListener<String> listener = new ChangeListener<String>() {
+        ChangeListener<String> listener = new ChangeListener<>() {
             @Override
             public void changed(ObservableValue<? extends String> obs, String oldValue, String newValue) {
                 if (newValue != null) {
-                    Rectangle father = (Rectangle) pannableCanvas.lookup("#" + newValue);
+                    Rectangle mother = (Rectangle) pannableCanvas.lookup("#" + newValue);
 
-                    if(validate(childId, newValue)) {
+                    if (validate(childId, newValue)) {
                         Line line = new Line();
                         line.startXProperty().bind(Bindings.add(child.translateXProperty(), 0.5 * child.getWidth()));
                         line.startYProperty().bind(child.translateYProperty());
-                        line.endXProperty().bind(Bindings.add(father.translateXProperty(), 0.5 * father.getWidth()));
-                        line.endYProperty().bind(Bindings.add(father.translateYProperty(), father.getHeight()));
+                        line.endXProperty().bind(Bindings.add(mother.translateXProperty(), 0.5 * mother.getWidth()));
+                        line.endYProperty().bind(Bindings.add(mother.translateYProperty(), mother.getHeight()));
 
-                        pannableCanvas.getChildren().add(line);
+                        line.toBack();
+                        mainViewController.getCanvasController().getPannableCanvas().getChildren().add(line);
+                        mainViewController.getFamilyMembersHashMap().get(childId).setMotherId(newValue);
+
+                        motherLinkButton.setVisible(false);
+                        delMotherLinkButton.setVisible(true);
                     }
                 }
+                unmarkRectangle(child);
                 pannableCanvas.currentNodeProperty().removeListener(this);
-                child.setStroke(null);
             }
         };
         pannableCanvas.currentNodeProperty().addListener(listener);
-
-//        mainViewController.getFamilyMembersHashMap().get(familyMemberId).setFatherId();
     }
 
-    private boolean validate(String childId, String fatherId) {
+    @FXML
+    public void handleSpouseLinkButtonAction() {
+        PannableCanvas pannableCanvas = mainViewController.getCanvasController().pannableCanvas;
+
+        String firstSpouseId = pannableCanvas.getCurrentNode();
+        Rectangle firstSpouse = (Rectangle) pannableCanvas.lookup("#" + firstSpouseId);
+
+        firstSpouse.setStroke(Color.GREEN);
+        firstSpouse.setStrokeType(StrokeType.OUTSIDE);
+        firstSpouse.setStrokeWidth(3);
+
+        ChangeListener<String> listener = new ChangeListener<>() {
+            @Override
+            public void changed(ObservableValue<? extends String> obs, String oldValue, String newValue) {
+                if (newValue != null) {
+                    Rectangle secondSpouse = (Rectangle) pannableCanvas.lookup("#" + newValue);
+
+                    if (validate(firstSpouseId, newValue)) {
+                        Line line = new Line();
+
+                        //Depending on which rectangle is on the right/left, connecting line changes its anchor points
+                        //in other words: line is always between rectangles
+                        line.startXProperty().bind(Bindings
+                                .when(firstSpouse.translateXProperty().greaterThan(secondSpouse.translateXProperty()))
+                                .then(firstSpouse.translateXProperty())
+                                .otherwise(Bindings.add(firstSpouse.translateXProperty(), firstSpouse.getWidth())));
+                        line.startYProperty().bind(Bindings.add(firstSpouse.translateYProperty(), 0.5 * firstSpouse.getHeight()));
+
+                        line.endXProperty().bind(Bindings
+                                .when(firstSpouse.translateXProperty().lessThan(secondSpouse.translateXProperty()))
+                                .then(secondSpouse.translateXProperty())
+                                .otherwise(Bindings.add(secondSpouse.translateXProperty(), secondSpouse.getWidth())));
+                        line.endYProperty().bind(Bindings.add(secondSpouse.translateYProperty(), 0.5 * secondSpouse.getHeight()));
+
+                        line.toBack();
+                        mainViewController.getCanvasController().getPannableCanvas().getChildren().add(line);
+
+                        mainViewController.getFamilyMembersHashMap().get(firstSpouseId).getPartners().add(secondSpouse.getId());
+                        mainViewController.getFamilyMembersHashMap().get(secondSpouse.getId()).getPartners().add(firstSpouseId);
+
+                        spouseLinkButton.setVisible(false);
+//                        delSpouseLinkButton.setVisible(true);
+                    }
+                }
+                unmarkRectangle(firstSpouse);
+                pannableCanvas.currentNodeProperty().removeListener(this);
+            }
+        };
+        pannableCanvas.currentNodeProperty().addListener(listener);
+    }
+
+    public void handleDelMotherLinkButtonAction() {
+
+    }
+
+
+    private void unmarkRectangle(Rectangle r) {
+        r.setStroke(Color.BLUE);
+        r.setStrokeType(StrokeType.CENTERED);
+        r.setStrokeWidth(1);
+    }
+
+
+    private boolean validate(String childId, String motherId) {
         Map<String, FamilyMember> family = mainViewController.getFamilyMembersHashMap();
-        LocalDate fatherBirthDate = family.get(fatherId).getBirthDate();
+        LocalDate fatherBirthDate = family.get(motherId).getBirthDate();
         LocalDate childBirthDate = family.get(childId).getBirthDate();
         if (fatherBirthDate != null && childBirthDate != null) {
-            if(fatherBirthDate.isAfter(childBirthDate)) {
-                AlertBox.display("Invalid family member", "Father have to be older!");
+            if (fatherBirthDate.isAfter(childBirthDate)) {
+                AlertBox.display("Invalid family member", "Father has to be older!");
                 return false;
             }
         }

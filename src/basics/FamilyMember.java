@@ -7,23 +7,20 @@ public class FamilyMember {
 
     private final String id;
 
-    private String firstName;
-    private String secondName;
-    private String lastName;
-    private LocalDate birthDate;
-    private String notes;
+    private String firstName = "";
+    private String secondName = "";
+    private String lastName = "";
+    private LocalDate birthDate = LocalDate.of(1,1,1);
+    private String notes = "";
 
-    private String fatherId;
-    private String motherId;
+    private String fatherId = "";
+    private String motherId = "";
+
+    private List<String> partners = new ArrayList<>();
 
 
     public FamilyMember() {
         this.id = UUID.randomUUID().toString();
-        this.firstName = "";
-        this.secondName = "";
-        this.lastName = "";
-        this.birthDate = LocalDate.of(1,1,1);
-        this.notes = "";
     }
 
     public FamilyMember(String id, String firstName, String secondName, String lastName, LocalDate birthDate, String notes) {
@@ -105,5 +102,13 @@ public class FamilyMember {
 
     public void setMotherId(String motherId) {
         this.motherId = motherId;
+    }
+
+    public List<String> getPartners() {
+        return partners;
+    }
+
+    public void setPartners(List<String> partners) {
+        this.partners = partners;
     }
 }

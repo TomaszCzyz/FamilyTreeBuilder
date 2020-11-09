@@ -11,9 +11,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
 
@@ -87,7 +90,7 @@ public class MainViewController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         menuBarController.injectMainViewController(this);
         leftPanelController.injectMainViewController(this);
         canvasController.injectMainViewController(this);
@@ -106,6 +109,16 @@ public class MainViewController implements Initializable {
         canvasController.getPannableCanvas().currentNodeProperty().addListener((v, oldValue, newValue) -> {
             if(newValue != null) {
                 rightPanelController.fillRightPanel(familyMembersHashMap.get(newValue));
+                Rectangle newRectangle = (Rectangle) canvasController.getPannableCanvas().lookup("#" + newValue);
+                newRectangle.setStroke(Color.ORANGE);
+                newRectangle.setStrokeType(StrokeType.OUTSIDE);
+                newRectangle.setStrokeWidth(3);
+            }
+            if(oldValue != null) {
+                Rectangle oldRectangle = (Rectangle) canvasController.getPannableCanvas().lookup("#" + oldValue);
+                oldRectangle.setStroke(Color.BLUE);
+                oldRectangle.setStrokeType(StrokeType.CENTERED);
+                oldRectangle.setStrokeWidth(1);
             }
         });
     }
