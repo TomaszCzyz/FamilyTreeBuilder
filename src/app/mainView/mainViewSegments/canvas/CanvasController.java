@@ -21,26 +21,13 @@ import java.util.ResourceBundle;
 public class CanvasController extends MainViewSegment implements Initializable {
 
     @FXML
-    public AnchorPane anchorPane;
-
-    @FXML
     public PannableCanvas pannableCanvas;
 
+    @FXML
+    public AnchorPane anchorPane;
 
-//    private HashMap<FamilyMember, Point2D.Float> shapesCordsArrayList = new HashMap<>();
 
-    public void start() {
-        //
-    }
-
-    public void addMemberToBoard(FamilyMember familyMember) {
-        addMemberToBoard(familyMember, 0f, 0f);
-    }
-
-    public void addMemberToBoard(FamilyMember familyMember, float posX, float posY) {
-
-        addBoxToBoard(familyMember, posX, posY);
-
+    public void initializeSceneGestures() {
         SceneGestures sceneGestures = new SceneGestures(pannableCanvas);
         anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
         anchorPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
@@ -50,16 +37,24 @@ public class CanvasController extends MainViewSegment implements Initializable {
         anchorPane.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
     }
 
-    public void addBoxToBoard(FamilyMember familyMember, float posX, float posY) {
+    public void addMemberToBoard(FamilyMember familyMember) {
 
-        NodeGestures nodeGestures = new NodeGestures(pannableCanvas);
+        addMemberToBoard(familyMember, 0f, 0f);
+
+    }
+
+
+    public void addMemberToBoard(FamilyMember familyMember, float posX, float posY) {
 
         Rectangle rectangle = new Rectangle(100, 50);
         rectangle.setId(familyMember.getId());
         rectangle.setTranslateX(posX);
         rectangle.setTranslateY(posY);
+
         rectangle.setStroke(Color.BLUE);
         rectangle.setFill(Color.BLUE.deriveColor(1, 1, 1, 0.5));
+
+        NodeGestures nodeGestures = new NodeGestures(pannableCanvas);
         //event order matters!
         rectangle.addEventFilter(MouseEvent.MOUSE_PRESSED, nodeGestures.getOnMousePressedEventHandler());
         rectangle.addEventFilter(MouseEvent.MOUSE_DRAGGED, nodeGestures.getOnMouseDraggedEventHandler());
@@ -92,19 +87,17 @@ public class CanvasController extends MainViewSegment implements Initializable {
         }
     }
 
-
-
-    public PannableCanvas getPannableCanvas() {
-        return pannableCanvas;
+    public void delLinkFromTo(String startId, String endId) {
+        Node node = pannableCanvas.lookup("#" + startId + endId);
+        if(node != null) {
+            pannableCanvas.getChildren().remove(node);
+        }
     }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
 
-        pannableCanvas.currentNodeProperty().addListener((v, oldValue, newValue) -> {
-            System.out.println("new: " + newValue);
-            mainViewController.getRightPanelController().setVisible(newValue != null);
-        });
     }
 }

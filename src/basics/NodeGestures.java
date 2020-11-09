@@ -4,6 +4,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Rectangle;
 
 import static java.lang.System.currentTimeMillis;
 
@@ -12,7 +13,7 @@ import static java.lang.System.currentTimeMillis;
  */
 public class NodeGestures {
 
-    PannableCanvas canvas;
+    PannableCanvas pannableCanvas;
 
     private long timePressed;
     private long timeReleased;
@@ -33,7 +34,6 @@ public class NodeGestures {
             nodeDragContext.mouseAnchorY = event.getSceneY();
 
             Node node = (Node) event.getSource();
-
             nodeDragContext.translateAnchorX = node.getTranslateX();
             nodeDragContext.translateAnchorY = node.getTranslateY();
         }
@@ -46,9 +46,7 @@ public class NodeGestures {
             if (!event.isPrimaryButtonDown())
                 return;
 
-//            canvas.setWasDragged(true);
-
-            double scale = canvas.getScale();
+            double scale = pannableCanvas.getScale();
             Node node = (Node) event.getSource();
             node.setTranslateX(nodeDragContext.translateAnchorX + ((event.getSceneX() - nodeDragContext.mouseAnchorX) / scale));
             node.setTranslateY(nodeDragContext.translateAnchorY + ((event.getSceneY() - nodeDragContext.mouseAnchorY) / scale));
@@ -75,17 +73,21 @@ public class NodeGestures {
                 return;
 
             if(mousePressedDuration() < 200) {
-                Node node = (Node) event.getSource();
-                canvas.setCurrentNode(node.getId());
+//                Node node = (Node) event.getSource();
+                Rectangle rectangle = (Rectangle) event.getSource();
 
-            event.consume();
+                //order matters because setting currentNodeId initialize listener
+                pannableCanvas.setCurrentRectangle((Rectangle) rectangle);
+                pannableCanvas.setCurrentNodeId(rectangle.getId());
+
+                event.consume();
             }
         }
     };
 
 
     public NodeGestures(PannableCanvas pannableCanvas) {
-        this.canvas = pannableCanvas;
+        this.pannableCanvas = pannableCanvas;
     }
 
     private long mousePressedDuration() {

@@ -102,7 +102,7 @@ public class MenuBarController extends MainViewSegment implements Initializable 
             //i need only positions for each familyMember, beacuse i can create opened familyTree by run addMemberToBoard
             //label should clearly determinate familyMember
             Label l = new Label();
-            Iterable<Node> labelsOnBoard = mainViewController.getCanvasController().getPannableCanvas().getChildren();
+            Iterable<Node> labelsOnBoard = pannableCanvas.getChildren();
             labelsOnBoard.forEach(label -> {
                 if(label.getClass() == l.getClass()) {
                     String id = label.getId();
@@ -123,7 +123,7 @@ public class MenuBarController extends MainViewSegment implements Initializable 
         ifCanSave.setValue(true);
 
         mainViewController.getFamilyMembersHashMap().clear();
-        mainViewController.getCanvasController().getPannableCanvas().getChildren().clear();
+        pannableCanvas.getChildren().clear();
 
         readCSV(url);
     }

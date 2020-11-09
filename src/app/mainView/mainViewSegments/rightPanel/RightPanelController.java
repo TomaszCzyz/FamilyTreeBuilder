@@ -2,8 +2,8 @@ package app.mainView.mainViewSegments.rightPanel;
 
 import app.mainView.mainViewSegments.MainViewSegment;
 import basics.AlertBox;
+import basics.ConfirmBox;
 import basics.FamilyMember;
-import basics.PannableCanvas;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -50,10 +50,8 @@ public class RightPanelController extends MainViewSegment {
 
     @FXML
     public void handleMotherLinkButtonAction() {
-        PannableCanvas pannableCanvas = mainViewController.getCanvasController().pannableCanvas;
-
-        String childId = pannableCanvas.getCurrentNode();
-        Rectangle child = (Rectangle) pannableCanvas.lookup("#" + childId);
+        String childId = pannableCanvas.getCurrentNodeId();
+        Rectangle child = pannableCanvas.getCurrentRectangle();
 
         child.setStroke(Color.RED);
         child.setStrokeType(StrokeType.OUTSIDE);
@@ -63,35 +61,33 @@ public class RightPanelController extends MainViewSegment {
             @Override
             public void changed(ObservableValue<? extends String> obs, String oldValue, String newValue) {
                 if (newValue != null) {
-                    Rectangle mother = (Rectangle) pannableCanvas.lookup("#" + newValue);
+                    Rectangle mother = pannableCanvas.getCurrentRectangle();
 
-                    if (validate(childId, newValue)) {
+                    if (validate(child.getId(), newValue)) {
                         Line line = new Line();
+                        line.setId(childId + mother.getId());
+
                         line.startXProperty().bind(Bindings.add(child.translateXProperty(), 0.5 * child.getWidth()));
                         line.startYProperty().bind(child.translateYProperty());
                         line.endXProperty().bind(Bindings.add(mother.translateXProperty(), 0.5 * mother.getWidth()));
                         line.endYProperty().bind(Bindings.add(mother.translateYProperty(), mother.getHeight()));
 
                         line.toBack();
-                        mainViewController.getCanvasController().getPannableCanvas().getChildren().add(line);
+                        pannableCanvas.getChildren().add(line);
                         mainViewController.getFamilyMembersHashMap().get(childId).setMotherId(newValue);
-
-                        motherLinkButton.setVisible(false);
-                        delMotherLinkButton.setVisible(true);
                     }
                 }
                 unmarkRectangle(child);
-                pannableCanvas.currentNodeProperty().removeListener(this);
+                pannableCanvas.currentNodeIdProperty().removeListener(this);
             }
         };
-        pannableCanvas.currentNodeProperty().addListener(listener);
+
+        pannableCanvas.currentNodeIdProperty().addListener(listener);
     }
 
     @FXML
     public void handleSpouseLinkButtonAction() {
-        PannableCanvas pannableCanvas = mainViewController.getCanvasController().pannableCanvas;
-
-        String firstSpouseId = pannableCanvas.getCurrentNode();
+        String firstSpouseId = pannableCanvas.getCurrentNodeId();
         Rectangle firstSpouse = (Rectangle) pannableCanvas.lookup("#" + firstSpouseId);
 
         firstSpouse.setStroke(Color.GREEN);
@@ -102,13 +98,16 @@ public class RightPanelController extends MainViewSegment {
             @Override
             public void changed(ObservableValue<? extends String> obs, String oldValue, String newValue) {
                 if (newValue != null) {
-                    Rectangle secondSpouse = (Rectangle) pannableCanvas.lookup("#" + newValue);
+                    Rectangle secondSpouse = pannableCanvas.getCurrentRectangle();
 
                     if (validate(firstSpouseId, newValue)) {
                         Line line = new Line();
+                        line.setId(firstSpouse.getId() + secondSpouse.getId());
 
-                        //Depending on which rectangle is on the right/left, connecting line changes its anchor points
-                        //in other words: line is always between rectangles
+                        /*
+                        Depending on which rectangle is on the right/left, connecting line changes its anchor points
+                        in other words: line is always between rectangles
+                        */
                         line.startXProperty().bind(Bindings
                                 .when(firstSpouse.translateXProperty().greaterThan(secondSpouse.translateXProperty()))
                                 .then(firstSpouse.translateXProperty())
@@ -122,24 +121,33 @@ public class RightPanelController extends MainViewSegment {
                         line.endYProperty().bind(Bindings.add(secondSpouse.translateYProperty(), 0.5 * secondSpouse.getHeight()));
 
                         line.toBack();
-                        mainViewController.getCanvasController().getPannableCanvas().getChildren().add(line);
+                        pannableCanvas.getChildren().add(line);
 
                         mainViewController.getFamilyMembersHashMap().get(firstSpouseId).getPartners().add(secondSpouse.getId());
                         mainViewController.getFamilyMembersHashMap().get(secondSpouse.getId()).getPartners().add(firstSpouseId);
-
-                        spouseLinkButton.setVisible(false);
-//                        delSpouseLinkButton.setVisible(true);
                     }
                 }
                 unmarkRectangle(firstSpouse);
-                pannableCanvas.currentNodeProperty().removeListener(this);
+                pannableCanvas.currentNodeIdProperty().removeListener(this);
             }
         };
-        pannableCanvas.currentNodeProperty().addListener(listener);
+        pannableCanvas.currentNodeIdProperty().addListener(listener);
     }
 
+    @FXML
     public void handleDelMotherLinkButtonAction() {
 
+        boolean answer = ConfirmBox.display("Warning", "Sure you want to delete connection to mother?");
+        if (answer) {
+            String childId = pannableCanvas.getCurrentNodeId();
+            String motherId = mainViewController.getFamilyMembersHashMap().get(childId).getMotherId();
+            mainViewController.getCanvasController().delLinkFromTo(childId, motherId);
+
+            mainViewController.getFamilyMembersHashMap().get(childId).setMotherId("");
+
+            //refresh rightPanel (to change button del(Link) to link)
+            fillRightPanel(mainViewController.getFamilyMembersHashMap().get(childId));
+        }
     }
 
 
@@ -168,6 +176,14 @@ public class RightPanelController extends MainViewSegment {
         secondNameText.setText(familyMember.getSecondName());
         lastNameText.setText(familyMember.getLastName());
         birthDateText.setText(String.valueOf(familyMember.getBirthDate()));
+
+        if(!familyMember.getMotherId().equals("")) {
+            motherLinkButton.setVisible(false);
+            delMotherLinkButton.setVisible(true);
+        } else {
+            motherLinkButton.setVisible(true);
+            delMotherLinkButton.setVisible(false);
+        }
     }
 
     public final void setVisible(boolean b) {

@@ -4,40 +4,27 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-
-import java.net.URL;
-import java.util.ResourceBundle;
+import javafx.scene.shape.Rectangle;
 
 
-public class PannableCanvas extends Pane implements Initializable {
+public class PannableCanvas extends Pane {
 
     DoubleProperty myScale = new SimpleDoubleProperty(1.0);
 
-    private boolean selectFather = false;
+    private final StringProperty currentNodeId = new SimpleStringProperty(null);
 
-    private final StringProperty currentNode = new SimpleStringProperty(null);
+    private Rectangle currentRectangle;
 
-    private boolean wasDragged = false;
 
     public PannableCanvas() {
         // add scale transform
         scaleXProperty().bind(myScale);
         scaleYProperty().bind(myScale);
-
-        // logging
-//        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-//            System.out.println(
-//                    "canvas event: " + (((event.getSceneX() - getBoundsInParent().getMinX()) / getScale()) + ", scale: " + getScale())
-//            );
-//            System.out.println("canvas bounds: " + getBoundsInParent());
-//        });
     }
-
 
     /**
      * Add a grid to the canvas, send it to back
@@ -74,7 +61,6 @@ public class PannableCanvas extends Pane implements Initializable {
         grid.toBack();
     }
 
-
     public double getScale() {
         return myScale.get();
     }
@@ -88,29 +74,24 @@ public class PannableCanvas extends Pane implements Initializable {
         setTranslateY(getTranslateY() - y);
     }
 
-    public String getCurrentNode() {
-        return currentNode.get();
+    public String getCurrentNodeId() {
+        return currentNodeId.get();
     }
 
-    public StringProperty currentNodeProperty() {
-        return currentNode;
+    public StringProperty currentNodeIdProperty() {
+        return currentNodeId;
     }
 
-    public void setCurrentNode(String currentNode) {
-        this.currentNode.set(currentNode);
+    public void setCurrentNodeId(String currentNodeId) {
+        this.currentNodeId.set(currentNodeId);
     }
 
-    public boolean isSelectFather() {
-        return selectFather;
+    public Rectangle getCurrentRectangle() {
+        return currentRectangle;
     }
 
-    public void setSelectFather(boolean selectFather) {
-        this.selectFather = selectFather;
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("adsa");
+    public void setCurrentRectangle(Rectangle currentRectangle) {
+        this.currentRectangle = currentRectangle;
     }
 }
 

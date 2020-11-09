@@ -12,7 +12,7 @@ import static java.lang.System.currentTimeMillis;
  */
 public class SceneGestures {
 
-    PannableCanvas canvas;
+    PannableCanvas pannableCanvas;
 
     private static final double MAX_SCALE = 5.0d;
     private static final double MIN_SCALE = .1d;
@@ -22,7 +22,7 @@ public class SceneGestures {
 
     private final DragContext sceneDragContext = new DragContext();
 
-    private final EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {
+    private final EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<>() {
         @Override
         public void handle(MouseEvent event) {
 
@@ -35,19 +35,19 @@ public class SceneGestures {
             sceneDragContext.mouseAnchorX = event.getSceneX();
             sceneDragContext.mouseAnchorY = event.getSceneY();
 
-            sceneDragContext.translateAnchorX = canvas.getTranslateX();
-            sceneDragContext.translateAnchorY = canvas.getTranslateY();
+            sceneDragContext.translateAnchorX = pannableCanvas.getTranslateX();
+            sceneDragContext.translateAnchorY = pannableCanvas.getTranslateY();
         }
     };
 
-    private final EventHandler<MouseEvent> onMouseDraggedEventHandler = new EventHandler<MouseEvent>() {
+    private final EventHandler<MouseEvent> onMouseDraggedEventHandler = new EventHandler<>() {
         public void handle(MouseEvent event) {
             // right mouse button => panning
             if (!event.isSecondaryButtonDown())
                 return;
 
-            canvas.setTranslateX(sceneDragContext.translateAnchorX + event.getSceneX() - sceneDragContext.mouseAnchorX);
-            canvas.setTranslateY(sceneDragContext.translateAnchorY + event.getSceneY() - sceneDragContext.mouseAnchorY);
+            pannableCanvas.setTranslateX(sceneDragContext.translateAnchorX + event.getSceneX() - sceneDragContext.mouseAnchorX);
+            pannableCanvas.setTranslateY(sceneDragContext.translateAnchorY + event.getSceneY() - sceneDragContext.mouseAnchorY);
 
             event.consume();
         }
@@ -68,10 +68,9 @@ public class SceneGestures {
             if (event.getButton() != MouseButton.PRIMARY)
                 return;
 
-//            Event.fireEvent(, );
-
             if(mousePressedDuration() < 200) {
-                canvas.setCurrentNode(null);
+                pannableCanvas.setCurrentNodeId(null);
+                pannableCanvas.setCurrentRectangle(null);
             }
 
         }
@@ -80,15 +79,16 @@ public class SceneGestures {
     private long mousePressedDuration() {
         return timeReleased - timePressed;
     }
+
     /**
      * Mouse wheel handler: zoom to pivot point
      */
-    private final EventHandler<ScrollEvent> onScrollEventHandler = new EventHandler<ScrollEvent>() {
+    private final EventHandler<ScrollEvent> onScrollEventHandler = new EventHandler<>() {
 
         @Override
         public void handle(ScrollEvent event) {
 
-            double scale = canvas.getScale(); // currently we only use Y, same value is used for X
+            double scale = pannableCanvas.getScale(); // currently we only use Y, same value is used for X
             double oldScale = scale;
 
             scale *= Math.pow(1.002, event.getDeltaY());
@@ -101,19 +101,19 @@ public class SceneGestures {
 
             double f = (scale / oldScale) - 1;
 
-            double dx = (event.getSceneX() - (canvas.getBoundsInParent().getWidth() / 2 + canvas.getBoundsInParent().getMinX()));
-            double dy = (event.getSceneY() - (canvas.getBoundsInParent().getHeight() / 2 + canvas.getBoundsInParent().getMinY()));
+            double dx = (event.getSceneX() - (pannableCanvas.getBoundsInParent().getWidth() / 2 + pannableCanvas.getBoundsInParent().getMinX()));
+            double dy = (event.getSceneY() - (pannableCanvas.getBoundsInParent().getHeight() / 2 + pannableCanvas.getBoundsInParent().getMinY()));
 
-            canvas.setScale(scale);
-            canvas.setPivot(f * dx, f * dy);
+            pannableCanvas.setScale(scale);
+            pannableCanvas.setPivot(f * dx, f * dy);
 
             event.consume();
         }
     };
 
 
-    public SceneGestures(PannableCanvas canvas) {
-        this.canvas = canvas;
+    public SceneGestures(PannableCanvas pannableCanvas) {
+        this.pannableCanvas = pannableCanvas;
     }
 
     public EventHandler<MouseEvent> getOnMousePressedEventHandler() {

@@ -6,6 +6,7 @@ import app.mainView.mainViewSegments.leftPanel.LeftPanelController;
 import app.mainView.mainViewSegments.menuBar.MenuBarController;
 import app.mainView.mainViewSegments.rightPanel.RightPanelController;
 import basics.FamilyMember;
+import basics.PannableCanvas;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.*;
@@ -97,6 +98,14 @@ public class MainViewController implements Initializable {
         rightPanelController.injectMainViewController(this);
         bottomController.injectMainViewController(this);
 
+        PannableCanvas pannableCanvas = canvasController.pannableCanvas;
+        menuBarController.injectPannableCanvas(pannableCanvas);
+        leftPanelController.injectPannableCanvas(pannableCanvas);
+        rightPanelController.injectPannableCanvas(pannableCanvas);
+        bottomController.injectPannableCanvas(pannableCanvas);
+
+        canvasController.initializeSceneGestures();
+
         centerHbox.setBorder(new Border(new BorderStroke(Color.BLUE,
                 BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         canvasController.anchorPane.setBorder(new Border(new BorderStroke(Color.BLACK,
@@ -106,16 +115,21 @@ public class MainViewController implements Initializable {
 
         rightPanelController.setVisible(false);
 
-        canvasController.getPannableCanvas().currentNodeProperty().addListener((v, oldValue, newValue) -> {
+        //action when user check other rectangle or click on board
+        pannableCanvas.currentNodeIdProperty().addListener((v, oldValue, newValue) -> {
+            System.out.println("new: " + newValue);
+            rightPanelController.setVisible(newValue != null);
+
             if(newValue != null) {
                 rightPanelController.fillRightPanel(familyMembersHashMap.get(newValue));
-                Rectangle newRectangle = (Rectangle) canvasController.getPannableCanvas().lookup("#" + newValue);
+                Rectangle newRectangle = pannableCanvas.getCurrentRectangle();
+
                 newRectangle.setStroke(Color.ORANGE);
                 newRectangle.setStrokeType(StrokeType.OUTSIDE);
                 newRectangle.setStrokeWidth(3);
             }
             if(oldValue != null) {
-                Rectangle oldRectangle = (Rectangle) canvasController.getPannableCanvas().lookup("#" + oldValue);
+                Rectangle oldRectangle = (Rectangle) pannableCanvas.lookup("#" + oldValue);
                 oldRectangle.setStroke(Color.BLUE);
                 oldRectangle.setStrokeType(StrokeType.CENTERED);
                 oldRectangle.setStrokeWidth(1);

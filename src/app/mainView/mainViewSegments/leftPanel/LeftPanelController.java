@@ -75,7 +75,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
     @FXML
     public void handleDelMemberButtonAction() {
-        String famMemId = mainViewController.getCanvasController().pannableCanvas.getCurrentNode();
+        String famMemId = pannableCanvas.getCurrentNodeId();
         if(famMemId == null) {
             AlertBox.display("Delete", "Choose family member from board first!");
         } else {
@@ -90,7 +90,6 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
         @FXML
     public void handleZoomInButtonAction() {
-        PannableCanvas pannableCanvas = mainViewController.getCanvasController().getPannableCanvas();
         double scale = pannableCanvas.getScale();
         scale *= Math.pow(1.002, 40.0);
 
@@ -103,7 +102,6 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
     @FXML
     public void handleZoomOutButtonAction() {
-        PannableCanvas pannableCanvas = mainViewController.getCanvasController().getPannableCanvas();
         double scale = pannableCanvas.getScale();
         scale *= Math.pow(1.002, -40.0);
 
