@@ -50,89 +50,70 @@ public class RightPanelController extends MainViewSegment {
 
     @FXML
     public void handleMotherLinkButtonAction() {
-        String childId = pannableCanvas.getCurrentNodeId();
-        Rectangle child = pannableCanvas.getCurrentRectangle();
-
-        child.setStroke(Color.RED);
-        child.setStrokeType(StrokeType.OUTSIDE);
-        child.setStrokeWidth(3);
-
-        ChangeListener<String> listener = new ChangeListener<>() {
-            @Override
-            public void changed(ObservableValue<? extends String> obs, String oldValue, String newValue) {
-                if (newValue != null) {
-                    Rectangle mother = pannableCanvas.getCurrentRectangle();
-
-                    if (validate(child.getId(), newValue)) {
-                        Line line = new Line();
-                        line.setId(childId + mother.getId());
-
-                        line.startXProperty().bind(Bindings.add(child.translateXProperty(), 0.5 * child.getWidth()));
-                        line.startYProperty().bind(child.translateYProperty());
-                        line.endXProperty().bind(Bindings.add(mother.translateXProperty(), 0.5 * mother.getWidth()));
-                        line.endYProperty().bind(Bindings.add(mother.translateYProperty(), mother.getHeight()));
-
-                        line.toBack();
-                        pannableCanvas.getChildren().add(line);
-                        mainViewController.getFamilyMembersHashMap().get(childId).setMotherId(newValue);
-                    }
-                }
-                unmarkRectangle(child);
-                pannableCanvas.currentNodeIdProperty().removeListener(this);
-            }
-        };
-
-        pannableCanvas.currentNodeIdProperty().addListener(listener);
+        linkFrom(pannableCanvas.getCurrentRectangle(), "toMother");
     }
 
     @FXML
     public void handleSpouseLinkButtonAction() {
-        String firstSpouseId = pannableCanvas.getCurrentNodeId();
-        Rectangle firstSpouse = (Rectangle) pannableCanvas.lookup("#" + firstSpouseId);
+        linkFrom(pannableCanvas.getCurrentRectangle(), "toSpouse");
+    }
 
-        firstSpouse.setStroke(Color.GREEN);
-        firstSpouse.setStrokeType(StrokeType.OUTSIDE);
-        firstSpouse.setStrokeWidth(3);
+    private void linkFrom(Rectangle startRectangle, String linkType) {
+        /*setMouseTransparent is used to prevent pressing buttons in right panel till linking operation ends*/
+        rightPanelVBox.setDisable(true);
+        markRectangle(startRectangle, linkType);
 
         ChangeListener<String> listener = new ChangeListener<>() {
             @Override
             public void changed(ObservableValue<? extends String> obs, String oldValue, String newValue) {
-                if (newValue != null) {
-                    Rectangle secondSpouse = pannableCanvas.getCurrentRectangle();
 
-                    if (validate(firstSpouseId, newValue)) {
-                        Line line = new Line();
-                        line.setId(firstSpouse.getId() + secondSpouse.getId());
+                if (newValue != null && validate(startRectangle.getId(), newValue)) {
 
-                        /*
-                        Depending on which rectangle is on the right/left, connecting line changes its anchor points
-                        in other words: line is always between rectangles
-                        */
-                        line.startXProperty().bind(Bindings
-                                .when(firstSpouse.translateXProperty().greaterThan(secondSpouse.translateXProperty()))
-                                .then(firstSpouse.translateXProperty())
-                                .otherwise(Bindings.add(firstSpouse.translateXProperty(), firstSpouse.getWidth())));
-                        line.startYProperty().bind(Bindings.add(firstSpouse.translateYProperty(), 0.5 * firstSpouse.getHeight()));
+                    Rectangle endRectangle = pannableCanvas.getCurrentRectangle();
 
-                        line.endXProperty().bind(Bindings
-                                .when(firstSpouse.translateXProperty().lessThan(secondSpouse.translateXProperty()))
-                                .then(secondSpouse.translateXProperty())
-                                .otherwise(Bindings.add(secondSpouse.translateXProperty(), secondSpouse.getWidth())));
-                        line.endYProperty().bind(Bindings.add(secondSpouse.translateYProperty(), 0.5 * secondSpouse.getHeight()));
+                    Line line = new Line();
+                    line.setId(startRectangle.getId() + endRectangle.getId());
 
-                        line.toBack();
-                        pannableCanvas.getChildren().add(line);
+                    switch (linkType) {
+                        case "toMother":
+                            line.startXProperty().bind(Bindings.add(startRectangle.translateXProperty(), 0.5 * startRectangle.getWidth()));
+                            line.startYProperty().bind(startRectangle.translateYProperty());
+                            line.endXProperty().bind(Bindings.add(endRectangle.translateXProperty(), 0.5 * endRectangle.getWidth()));
+                            line.endYProperty().bind(Bindings.add(endRectangle.translateYProperty(), endRectangle.getHeight()));
+                            break;
+                        case "toSpouse":
+                            /*
+                            Depending on which rectangle is on the right/left, connecting line changes its anchor points
+                            in other words: line is always between rectangles
+                            */
+                            line.startXProperty().bind(Bindings
+                                    .when(startRectangle.translateXProperty().greaterThan(endRectangle.translateXProperty()))
+                                    .then(startRectangle.translateXProperty())
+                                    .otherwise(Bindings.add(startRectangle.translateXProperty(), startRectangle.getWidth())));
+                            line.startYProperty().bind(Bindings.add(startRectangle.translateYProperty(), 0.5 * startRectangle.getHeight()));
 
-                        mainViewController.getFamilyMembersHashMap().get(firstSpouseId).getPartners().add(secondSpouse.getId());
-                        mainViewController.getFamilyMembersHashMap().get(secondSpouse.getId()).getPartners().add(firstSpouseId);
+                            line.endXProperty().bind(Bindings
+                                    .when(startRectangle.translateXProperty().lessThan(endRectangle.translateXProperty()))
+                                    .then(endRectangle.translateXProperty())
+                                    .otherwise(Bindings.add(endRectangle.translateXProperty(), endRectangle.getWidth())));
+                            line.endYProperty().bind(Bindings.add(endRectangle.translateYProperty(), 0.5 * endRectangle.getHeight()));
+                            break;
                     }
+
+                    line.toBack();
+                    pannableCanvas.getChildren().add(line);
+
+                    mainViewController.getFamilyMembersHashMap().get(startRectangle.getId()).getPartners().add(endRectangle.getId());
+                    mainViewController.getFamilyMembersHashMap().get(endRectangle.getId()).getPartners().add(startRectangle.getId());
                 }
-                unmarkRectangle(firstSpouse);
+                unmarkRectangle(startRectangle);
+                rightPanelVBox.setDisable(false);
                 pannableCanvas.currentNodeIdProperty().removeListener(this);
             }
         };
         pannableCanvas.currentNodeIdProperty().addListener(listener);
     }
+
 
     @FXML
     public void handleDelMotherLinkButtonAction() {
@@ -147,6 +128,19 @@ public class RightPanelController extends MainViewSegment {
 
             //refresh rightPanel (to change button del(Link) to link)
             fillRightPanel(mainViewController.getFamilyMembersHashMap().get(childId));
+        }
+    }
+
+    private void markRectangle(Rectangle r, String markType) {
+        r.setStrokeType(StrokeType.OUTSIDE);
+        r.setStrokeWidth(3);
+        switch (markType) {
+            case "toMother":
+                r.setStroke(Color.RED);
+                break;
+            case "toSpouse":
+                r.setStroke(Color.GREEN);
+                break;
         }
     }
 
