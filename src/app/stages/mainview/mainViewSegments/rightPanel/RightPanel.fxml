@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox fx:id="rightPanelVBox" prefHeight="450.0" prefWidth="240.0" BorderPane.alignment="CENTER"
+      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="app.stages.mainview.mainViewSegments.rightPanel.RightPanelController">
+    <GridPane>
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="140.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <Button mnemonicParsing="false" text="Edit" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/>
+        <Label text="First name:" GridPane.rowIndex="1"/>
+        <Label text="Second name:" GridPane.rowIndex="2"/>
+        <Label text="Last name:" GridPane.rowIndex="3"/>
+        <Label text="Birth date:" GridPane.rowIndex="4"/>
+        <Label text="Mother:" GridPane.rowIndex="5"/>
+        <Label text="Father:" GridPane.rowIndex="6"/>
+        <Label text="Spouse:" GridPane.rowIndex="7"/>
+        <Text fx:id="firstNameText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1"
+              GridPane.rowIndex="1"/>
+        <Text fx:id="secondNameText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1"
+              GridPane.rowIndex="2"/>
+        <Text fx:id="lastNameText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1"
+              GridPane.rowIndex="3"/>
+        <Text fx:id="birthDateText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1"
+              GridPane.rowIndex="4"/>
+        <Text fx:id="motherText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1"
+              GridPane.rowIndex="5"/>
+        <Text fx:id="fatherText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1"
+              GridPane.rowIndex="6"/>
+        <Text fx:id="spouseText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1"
+              GridPane.rowIndex="7"/>
+        <Button fx:id="motherLinkButton" onAction="#handleMotherLinkButtonAction" layoutX="100.0" layoutY="163.0"
+                mnemonicParsing="false" text="link" GridPane.columnIndex="1" GridPane.halignment="RIGHT"
+                GridPane.rowIndex="5"/>
+        <Button fx:id="delMotherLinkButton" onAction="#handleDelMotherLinkButtonAction" mnemonicParsing="false"
+                text="del" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT"
+                GridPane.rowIndex="5"/>
+        <Button fx:id="fatherLinkButton" mnemonicParsing="false" text="add" GridPane.columnIndex="1"
+                GridPane.halignment="RIGHT" GridPane.rowIndex="6"/>
+        <Button fx:id="spouseLinkButton" onAction="#handleSpouseLinkButtonAction" layoutX="215.0" layoutY="163.0"
+                mnemonicParsing="false" text="link" GridPane.columnIndex="1" GridPane.halignment="RIGHT"
+                GridPane.rowIndex="7"/>
+    </GridPane>
+</VBox>
