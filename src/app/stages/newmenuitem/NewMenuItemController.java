@@ -33,7 +33,7 @@ public class NewMenuItemController implements Initializable {
     @FXML
     public Button cancelButton;
 
-    private final StringProperty newFileName = new SimpleStringProperty("newFamilyTree.txt");
+    private final StringProperty newFileName = new SimpleStringProperty("outfile.csv");
 
     private final StringProperty baseURL = new SimpleStringProperty(new File("").getAbsolutePath());
 
@@ -45,7 +45,7 @@ public class NewMenuItemController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose folder");
         fileChooser.setInitialDirectory(new File(baseURL.getValue()));
-        fileChooser.setInitialFileName(fileNameTextFiled.getText() + ".txt");
+        fileChooser.setInitialFileName(fileNameTextFiled.getText() + ".csv");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
         baseURL.setValue(fileChooser.showSaveDialog(okButton.getScene().getWindow()).getParent());
     }
@@ -94,7 +94,7 @@ public class NewMenuItemController implements Initializable {
         pathLabel.setText(fullURL.getValue());
 
         fileNameTextFiled.textProperty().addListener((v, oldValue, newValue) -> {
-            newFileName.setValue(newValue + ".txt");
+            newFileName.setValue(newValue + ".csv");
         });
         newFileName.addListener((v, oldValue, newValue) -> {
             fullURL.setValue(baseURL.getValue() + "\\" + newValue);

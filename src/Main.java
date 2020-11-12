@@ -13,11 +13,9 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/stages/mainview/MainViewStage.fxml"));
         Parent root = loader.load();
 
+        //closing program using app's function
         MainViewController controller = loader.getController();
-        primaryStage.setOnCloseRequest(event -> {
-            controller.closeProgram();
-        });
-
+        primaryStage.setOnCloseRequest(event -> controller.closeProgram());
 
         primaryStage.setTitle("FamilyTreeBuilder");
         primaryStage.setScene(new Scene(root, 1100, 800));

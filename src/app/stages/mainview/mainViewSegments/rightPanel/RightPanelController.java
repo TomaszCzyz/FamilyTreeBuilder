@@ -50,69 +50,14 @@ public class RightPanelController extends MainViewSegment {
 
     @FXML
     public void handleMotherLinkButtonAction() {
-        linkFrom(pannableCanvas.getCurrentRectangle(), "toMother");
+        canvasController.linkFrom(canvasController.pannableCanvas.getCurrentRectangle(), "toMother");
     }
 
     @FXML
     public void handleSpouseLinkButtonAction() {
-        linkFrom(pannableCanvas.getCurrentRectangle(), "toSpouse");
+        canvasController.linkFrom(canvasController.pannableCanvas.getCurrentRectangle(), "toSpouse");
     }
 
-    private void linkFrom(Rectangle startRectangle, String linkType) {
-        /*setMouseTransparent is used to prevent pressing buttons in right panel till linking operation ends*/
-        rightPanelVBox.setDisable(true);
-        markRectangle(startRectangle, linkType);
-
-        ChangeListener<String> listener = new ChangeListener<>() {
-            @Override
-            public void changed(ObservableValue<? extends String> obs, String oldValue, String newValue) {
-
-                if (newValue != null && validate(startRectangle.getId(), newValue)) {
-
-                    Rectangle endRectangle = pannableCanvas.getCurrentRectangle();
-
-                    Line line = new Line();
-                    line.setId(startRectangle.getId() + endRectangle.getId());
-
-                    switch (linkType) {
-                        case "toMother":
-                            line.startXProperty().bind(Bindings.add(startRectangle.translateXProperty(), 0.5 * startRectangle.getWidth()));
-                            line.startYProperty().bind(startRectangle.translateYProperty());
-                            line.endXProperty().bind(Bindings.add(endRectangle.translateXProperty(), 0.5 * endRectangle.getWidth()));
-                            line.endYProperty().bind(Bindings.add(endRectangle.translateYProperty(), endRectangle.getHeight()));
-                            break;
-                        case "toSpouse":
-                            /*
-                            Depending on which rectangle is on the right/left, connecting line changes its anchor points
-                            in other words: line is always between rectangles
-                            */
-                            line.startXProperty().bind(Bindings
-                                    .when(startRectangle.translateXProperty().greaterThan(endRectangle.translateXProperty()))
-                                    .then(startRectangle.translateXProperty())
-                                    .otherwise(Bindings.add(startRectangle.translateXProperty(), startRectangle.getWidth())));
-                            line.startYProperty().bind(Bindings.add(startRectangle.translateYProperty(), 0.5 * startRectangle.getHeight()));
-
-                            line.endXProperty().bind(Bindings
-                                    .when(startRectangle.translateXProperty().lessThan(endRectangle.translateXProperty()))
-                                    .then(endRectangle.translateXProperty())
-                                    .otherwise(Bindings.add(endRectangle.translateXProperty(), endRectangle.getWidth())));
-                            line.endYProperty().bind(Bindings.add(endRectangle.translateYProperty(), 0.5 * endRectangle.getHeight()));
-                            break;
-                    }
-
-                    line.toBack();
-                    pannableCanvas.getChildren().add(line);
-
-                    mainViewController.getFamilyMembersHashMap().get(startRectangle.getId()).getPartners().add(endRectangle.getId());
-                    mainViewController.getFamilyMembersHashMap().get(endRectangle.getId()).getPartners().add(startRectangle.getId());
-                }
-                unmarkRectangle(startRectangle);
-                rightPanelVBox.setDisable(false);
-                pannableCanvas.currentNodeIdProperty().removeListener(this);
-            }
-        };
-        pannableCanvas.currentNodeIdProperty().addListener(listener);
-    }
 
 
     @FXML
@@ -120,7 +65,7 @@ public class RightPanelController extends MainViewSegment {
 
         boolean answer = ConfirmBox.display("Warning", "Sure you want to delete connection to mother?");
         if (answer) {
-            String childId = pannableCanvas.getCurrentNodeId();
+            String childId = canvasController.pannableCanvas.getCurrentNodeId();
             String motherId = mainViewController.getFamilyMembersHashMap().get(childId).getMotherId();
             mainViewController.getCanvasController().delLinkFromTo(childId, motherId);
 
@@ -131,39 +76,6 @@ public class RightPanelController extends MainViewSegment {
         }
     }
 
-    private void markRectangle(Rectangle r, String markType) {
-        r.setStrokeType(StrokeType.OUTSIDE);
-        r.setStrokeWidth(3);
-        switch (markType) {
-            case "toMother":
-                r.setStroke(Color.RED);
-                break;
-            case "toSpouse":
-                r.setStroke(Color.GREEN);
-                break;
-        }
-    }
-
-
-    private void unmarkRectangle(Rectangle r) {
-        r.setStroke(Color.BLUE);
-        r.setStrokeType(StrokeType.CENTERED);
-        r.setStrokeWidth(1);
-    }
-
-
-    private boolean validate(String childId, String motherId) {
-        Map<String, FamilyMember> family = mainViewController.getFamilyMembersHashMap();
-        LocalDate fatherBirthDate = family.get(motherId).getBirthDate();
-        LocalDate childBirthDate = family.get(childId).getBirthDate();
-        if (fatherBirthDate != null && childBirthDate != null) {
-            if (fatherBirthDate.isAfter(childBirthDate)) {
-                AlertBox.display("Invalid family member", "Father has to be older!");
-                return false;
-            }
-        }
-        return true;
-    }
 
     public void fillRightPanel(FamilyMember familyMember) {
         firstNameText.setText(familyMember.getFirstName());
@@ -171,7 +83,7 @@ public class RightPanelController extends MainViewSegment {
         lastNameText.setText(familyMember.getLastName());
         birthDateText.setText(String.valueOf(familyMember.getBirthDate()));
 
-        if(!familyMember.getMotherId().equals("")) {
+        if (!familyMember.getMotherId().equals("")) {
             motherLinkButton.setVisible(false);
             delMotherLinkButton.setVisible(true);
         } else {

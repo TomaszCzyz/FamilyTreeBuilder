@@ -65,7 +65,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
         if (!familyMember.getFirstName().isEmpty()) {
             mainViewController.getFamilyMembersHashMap().put(familyMember.getId(), familyMember);
-            mainViewController.getCanvasController().addMemberToBoard(familyMember, 100, 100);
+            mainViewController.getCanvasController().addMemberToBoard(familyMember);
             mainViewController.printFamilyMembersHashMap();
         } else {
             System.out.println("No new family member added\n");
@@ -75,7 +75,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
     @FXML
     public void handleDelMemberButtonAction() {
-        String famMemId = pannableCanvas.getCurrentNodeId();
+        String famMemId = canvasController.pannableCanvas.getCurrentNodeId();
         if(famMemId == null) {
             AlertBox.display("Delete", "Choose family member from board first!");
         } else {
@@ -90,26 +90,26 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
         @FXML
     public void handleZoomInButtonAction() {
-        double scale = pannableCanvas.getScale();
+        double scale = canvasController.pannableCanvas.getScale();
         scale *= Math.pow(1.002, 40.0);
 
         if (scale >= SceneGestures.getMaxScale()) {
             scale = SceneGestures.getMaxScale();
         }
 
-        pannableCanvas.setScale(scale);
+            canvasController.pannableCanvas.setScale(scale);
     }
 
     @FXML
     public void handleZoomOutButtonAction() {
-        double scale = pannableCanvas.getScale();
+        double scale = canvasController.pannableCanvas.getScale();
         scale *= Math.pow(1.002, -40.0);
 
         if (scale <= SceneGestures.getMinScale()) {
             scale = SceneGestures.getMinScale();
         }
 
-        pannableCanvas.setScale(scale);
+        canvasController.pannableCanvas.setScale(scale);
     }
 
     @Override

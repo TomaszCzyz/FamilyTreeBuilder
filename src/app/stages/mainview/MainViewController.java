@@ -15,7 +15,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
-import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -109,36 +108,36 @@ public class MainViewController implements Initializable {
         rightPanelController.injectMainViewController(this);
         bottomController.injectMainViewController(this);
 
-        PannableCanvas pannableCanvas = canvasController.pannableCanvas;
-        menuBarController.injectPannableCanvas(pannableCanvas);
-        leftPanelController.injectPannableCanvas(pannableCanvas);
-        rightPanelController.injectPannableCanvas(pannableCanvas);
-        bottomController.injectPannableCanvas(pannableCanvas);
+        menuBarController.injectCanvasController(canvasController);
+        leftPanelController.injectCanvasController(canvasController);
+        rightPanelController.injectCanvasController(canvasController);
+        bottomController.injectCanvasController(canvasController);
 
         canvasController.initializeSceneGestures();
         clipChildren(centerHbox);
         rightPanelController.setVisible(false);
 
         //open last session if can
-        if(configuration.getProperties().getLastSession() != null) {
-            menuBarController.openExistingFamilyTree(configuration.getProperties().getLastSession());
+        if (configuration.getProperties().getLastSession() != null) {
+//            menuBarController.openExistingFamilyTree(configuration.getProperties().getLastSession());
+            menuBarController.openExistingFamilyTree("outfile.csv");
         }
 
         //action when user click on rectangle or on board
-        pannableCanvas.currentNodeIdProperty().addListener((v, oldValue, newValue) -> {
+        canvasController.pannableCanvas.currentNodeIdProperty().addListener((v, oldValue, newValue) -> {
             System.out.println("new: " + newValue);
             rightPanelController.setVisible(newValue != null);
 
             if (newValue != null) {
                 rightPanelController.fillRightPanel(familyMembersHashMap.get(newValue));
-                Rectangle newRectangle = pannableCanvas.getCurrentRectangle();
+                Rectangle newRectangle = canvasController.pannableCanvas.getCurrentRectangle();
 
                 newRectangle.setStroke(Color.ORANGE);
                 newRectangle.setStrokeType(StrokeType.OUTSIDE);
                 newRectangle.setStrokeWidth(3);
             }
             if (oldValue != null) {
-                Rectangle oldRectangle = (Rectangle) pannableCanvas.lookup("#" + oldValue);
+                Rectangle oldRectangle = (Rectangle) canvasController.pannableCanvas.lookup("#" + oldValue);
                 oldRectangle.setStroke(Color.BLUE);
                 oldRectangle.setStrokeType(StrokeType.CENTERED);
                 oldRectangle.setStrokeWidth(1);

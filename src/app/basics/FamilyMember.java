@@ -1,21 +1,58 @@
 package app.basics;
 
+import com.opencsv.bean.*;
+
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class FamilyMember {
+public class FamilyMember implements Serializable {
 
-    private final String id;
+    @CsvBindByName(required = true)
+    @CsvBindByPosition(position = 0)
+    private String id;
 
+    @CsvBindByName
+    @CsvBindByPosition(position = 1)
+    private float posX;
+
+    @CsvBindByName(required = true)
+    @CsvBindByPosition(position = 2)
+    private float posY;
+
+
+    @CsvBindByName
+    @CsvBindByPosition(position = 3)
     private String firstName = "";
+
+    @CsvBindByName
+    @CsvBindByPosition(position = 4)
     private String secondName = "";
+
+    @CsvBindByName
+    @CsvBindByPosition(position = 5)
     private String lastName = "";
+
+    @CsvDate(value = "yyyy-MM-dd")
+    @CsvBindByName
+    @CsvBindByPosition(position = 6)
     private LocalDate birthDate = LocalDate.of(1,1,1);
+
+    @CsvBindByName
+    @CsvBindByPosition(position = 7)
     private String notes = "";
 
+
+    @CsvBindByName
+    @CsvBindByPosition(position = 8)
     private String fatherId = "";
+
+    @CsvBindByName
+    @CsvBindByPosition(position = 9)
     private String motherId = "";
 
+    @CsvBindByName
+    @CsvBindAndSplitByPosition(position = 10, elementType = String.class, splitOn = "#", writeDelimiter = "#", collectionType = ArrayList.class)
     private List<String> partners = new ArrayList<>();
 
 
@@ -36,17 +73,48 @@ public class FamilyMember {
         this(UUID.randomUUID().toString(), firstName, secondName, lastName, birthDate, notes);
     }
 
-//    public FamilyMember(FamilyMember f) {
-//        this(f.id, f.firstName, f.secondName, f.lastName, f.birthDate, f.notes);
-//    }
-
-
     @Override
     public String toString() {
-        return firstName + "," + secondName + "," + lastName + "," + birthDate.toString() + "," + notes;
+        return  "FamilyMember [id=" + id +
+                ", posX=" + posX +
+                ", posY=" + posY +
+                ", firstName=" + firstName +
+                ", secondName=" + secondName +
+                ", lastName=" + lastName +
+                ", birthDate=" + birthDate.toString() +
+                ", notes=" + notes +
+                ", fatherId=" + fatherId +
+                ", motherId=" + motherId +
+                ", partners= " + partners.toString() + "]";
     }
 
-    public String getFirstName() { return firstName; }
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public float getPosX() {
+        return posX;
+    }
+
+    public void setPosX(float posX) {
+        this.posX = posX;
+    }
+
+    public float getPosY() {
+        return posY;
+    }
+
+    public void setPosY(float posY) {
+        this.posY = posY;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -82,10 +150,6 @@ public class FamilyMember {
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getFatherId() {

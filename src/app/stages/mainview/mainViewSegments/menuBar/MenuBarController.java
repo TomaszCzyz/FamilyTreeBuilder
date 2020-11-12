@@ -2,33 +2,33 @@ package app.stages.mainview.mainViewSegments.menuBar;
 
 import app.stages.mainview.mainViewSegments.MainViewSegment;
 import app.stages.newmenuitem.NewMenuItemController;
-import app.basics.AlertBox;
 import app.basics.ConfirmBox;
 import app.basics.FamilyMember;
+import com.opencsv.bean.*;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
-* MenuBarController responsibilities:
-* -Saving
-* -Opening
-* -Closing
-* */
+ * MenuBarController responsibilities:
+ * -Saving
+ * -Opening
+ * -Closing
+ * */
 
 
 public class MenuBarController extends MainViewSegment {
@@ -42,8 +42,10 @@ public class MenuBarController extends MainViewSegment {
 
 
     public MenuBarController() {
-        ifCanSave = new SimpleBooleanProperty(false);
-        saveURL = "";
+        ifCanSave = new SimpleBooleanProperty(true);    //false
+//        saveURL = "";
+        saveURL = new File("").getAbsolutePath() + "\\" + "outfile.csv";
+
     }
 
     @FXML
@@ -73,10 +75,10 @@ public class MenuBarController extends MainViewSegment {
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
         String url = fileChooser.showOpenDialog(saveButton.getScene().getWindow()).toString();
-        if(url != null) {
-            if(!mainViewController.getFamilyMembersHashMap().isEmpty()) {
+        if (url != null) {
+            if (!mainViewController.getFamilyMembersHashMap().isEmpty()) {
                 boolean answer = ConfirmBox.display("Warning", "Open family tree will be close.\n Are you sure you want to continue?");
-                if(!answer) {
+                if (!answer) {
                     return;
                 }
             }
@@ -91,29 +93,35 @@ public class MenuBarController extends MainViewSegment {
     }
 
     @FXML
-    public void handleSaveButtonAction() throws IOException {
-        if(!ifCanSave.getValue()) {
+    public void handleSaveButtonAction() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+        if (!ifCanSave.getValue()) {
             handleNewMenuItemAction();
         }
-        if(ifCanSave.getValue()) {
-            FileWriter writer = new FileWriter(saveURL);
-            StringBuilder csvString = new StringBuilder();
-
-            //i need only positions for each familyMember, beacuse i can create opened familyTree by run addMemberToBoard
-            //label should clearly determinate familyMember
-            Label l = new Label();
-            Iterable<Node> labelsOnBoard = pannableCanvas.getChildren();
-            labelsOnBoard.forEach(label -> {
-                if(label.getClass() == l.getClass()) {
-                    String id = label.getId();
-                    csvString.append(id).append(',');
-                    csvString.append(label.getTranslateX()).append(',');
-                    csvString.append(label.getTranslateY()).append(',');
-                    csvString.append(mainViewController.getFamilyMembersHashMap().get(id).toString()).append('\n');
+        if (ifCanSave.getValue()) {
+            //update coordinates of familyMembers
+            canvasController.pannableCanvas.getChildren().forEach(node -> {
+                if (node instanceof Rectangle) {
+                    FamilyMember familyMember = mainViewController.getFamilyMembersHashMap().get(node.getId());
+                    familyMember.setPosX((float) node.getTranslateX());
+                    familyMember.setPosY((float) node.getTranslateY());
                 }
             });
 
-            writer.write(csvString.toString());
+            List<FamilyMember> familyMemberList = new ArrayList<>(mainViewController.getFamilyMembersHashMap().values());
+
+            System.out.println(saveURL);
+
+//            Writer writer = new FileWriter(saveURL);
+            Writer writer = new FileWriter("outfile1.csv");
+//            writer.append(Arrays.toString(new String[]{"id", "posX", "posY", "firstName", "secondName", "lastName", "birthDate", "notes", "fatherId", "motherId", "partners"}).append('\n'));
+
+            StatefulBeanToCsvBuilder<FamilyMember> builder = new StatefulBeanToCsvBuilder<>(writer);
+            StatefulBeanToCsv<FamilyMember> beanWriter = builder
+//                    .withSeparator(',')
+//                    .withQuotechar('"')
+                    .build();
+
+            beanWriter.write(familyMemberList);
             writer.close();
         }
     }
@@ -125,43 +133,48 @@ public class MenuBarController extends MainViewSegment {
         if (!mainViewController.getFamilyMembersHashMap().isEmpty()) {
             mainViewController.getFamilyMembersHashMap().clear();
         }
-        pannableCanvas.getChildren().clear();
-
-        readCSV(url);
-    }
-
-    private void readCSV(String url) {
-        String FieldDelimiter = ",";
-        BufferedReader br;
+        canvasController.pannableCanvas.getChildren().clear();
 
         try {
-            br = new BufferedReader(new FileReader(url));
+            FileReader fileReader = new FileReader("outfile.csv");
+            CsvToBeanBuilder<FamilyMember> builder = new CsvToBeanBuilder<>(fileReader);
+            List<FamilyMember> familyMemberList = builder
+                    .withType(FamilyMember.class).build().parse();
 
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] fields = line.split(FieldDelimiter, -1);
+            familyMemberList.forEach(System.out::println);
 
-                FamilyMember familyMember = new FamilyMember(
-                        fields[0],
-                        fields[3],
-                        fields[4],
-                        fields[5],
-                        LocalDate.parse(fields[6]),
-                        fields[7]);
-
+            //adding just rectangle with data
+            for (var familyMember : familyMemberList) {
                 mainViewController.getFamilyMembersHashMap().put(familyMember.getId(), familyMember);
-                mainViewController.getCanvasController().addMemberToBoard(
-                        familyMember,
-                        Float.parseFloat(fields[1]),
-                        Float.parseFloat(fields[2]));
+                mainViewController.getCanvasController().addMemberToBoard(familyMember);
+            }
+            //linking added rectangles
+            for (var familyMember : familyMemberList) {
+                if (!familyMember.getMotherId().equals("")) {
+//                    System.out.println(familyMember.getId() + ": " + lookFor(familyMember.getId()));
+//                    System.out.println(familyMember.getMotherId() + " " + lookFor(familyMember.getMotherId()));
+                    canvasController.createLineFromTo(lookFor(familyMember.getId()), lookFor(familyMember.getMotherId()), "toMother");
+                }
+//                if (!familyMember.getPartners().isEmpty()) {
+//                    for(var partnerId : familyMember.getPartners()) {
+//                        canvasController.createLineFromTo(lookFor(familyMember.getId()), lookFor(partnerId), "toSpouse");
+//                    }
+//                }
             }
 
-        } catch (FileNotFoundException ex) {
-            AlertBox.display("Error", "File not found");
-        } catch (IOException ex) {
-            AlertBox.display("Error", "IOException");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
+
+    public Rectangle lookFor(String id) {
+        Node node = canvasController.pannableCanvas.lookup("#" + id);
+        if (node instanceof Rectangle){
+            return (Rectangle) node;
+        }
+        return (Rectangle) canvasController.pannableCanvas.getChildren().get(0); //theoreticly it should never have happen...
+    }
+
 
     public String getSaveURL() {
         return saveURL;
