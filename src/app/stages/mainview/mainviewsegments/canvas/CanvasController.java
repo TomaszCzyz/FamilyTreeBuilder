@@ -19,9 +19,7 @@ import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class CanvasController extends MainViewSegment implements Initializable {
 
@@ -185,41 +183,33 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
 
     public void delFromCanvas(String familyMemberId) {
-//        canvasController.pannableCanvas.setCurrentNodeId("");
-        Node node;
-        //deleting rectangle
-        node = pannableCanvas.lookup("#" + familyMemberId);
-        if (node != null) {
-            pannableCanvas.getChildren().remove(node);
-        }
-        //deleting text (inside Rectangle)
-        node = pannableCanvas.lookup("#" + familyMemberId + "text");
-        if (node != null) {
-            pannableCanvas.getChildren().remove(node);
-        }
-        //deleting link to mother if exists
+        //writing all possible ids of nodes familiar with familyMemberId
+        List<String> selectors = new ArrayList<>();
+        selectors.add(familyMemberId);
+        selectors.add(familyMemberId + "text");
+
         String motherId = mainViewController.getFamilyMembersHashMap().get(familyMemberId).getMotherId();
-        if(motherId != null) {
-            node = pannableCanvas.lookup("#" + familyMemberId + motherId);
-            if (node != null) {
-                pannableCanvas.getChildren().remove(node);
-            }
-        }
-        //deleting link to partners if exists
-        List<String> partners = mainViewController.getFamilyMembersHashMap().get(familyMemberId).getPartners();
-        for(String partnerId : partners) {
-            //we dont know from who line was add, so we must check to possibilities
-            node = pannableCanvas.lookup("#" + familyMemberId + partnerId);
-            if (node != null) {
-                pannableCanvas.getChildren().remove(node);
-            } else {
-                node = pannableCanvas.lookup("#" + partnerId + familyMemberId);
-                if (node != null) {
-                    pannableCanvas.getChildren().remove(node);
-                }
-            }
+        if (!motherId.isEmpty()) {
+            selectors.add(familyMemberId + motherId);
         }
 
+        mainViewController.getFamilyMembersHashMap().forEach((id, familyMember) -> {
+            if(!familyMember.getMotherId().isEmpty() && familyMemberId.equals(familyMember.getMotherId())) {
+                //this means that there is link (from child to mother) to Rectangle which we want to delete
+                selectors.add(familyMember.getId() + familyMemberId);
+            }
+        });
+
+        List<String> partners = mainViewController.getFamilyMembersHashMap().get(familyMemberId).getPartners();
+        partners.forEach(partnerId -> selectors.addAll(Arrays.asList(familyMemberId + partnerId, partnerId + familyMemberId)));
+
+        //search for all nodes for each selector
+        Set<Node> nodes = new HashSet<>();
+        selectors.forEach(selector -> nodes.addAll(pannableCanvas.lookupAll("#" + selector)));
+
+        nodes.forEach(System.out::println);
+
+        pannableCanvas.getChildren().removeAll(nodes);
     }
 
 
