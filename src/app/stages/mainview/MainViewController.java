@@ -1,16 +1,16 @@
 package app.stages.mainview;
 
 import app.configuration.Configuration;
-import app.stages.mainview.mainViewSegments.bottom.BottomController;
-import app.stages.mainview.mainViewSegments.canvas.CanvasController;
-import app.stages.mainview.mainViewSegments.leftPanel.LeftPanelController;
-import app.stages.mainview.mainViewSegments.menuBar.MenuBarController;
-import app.stages.mainview.mainViewSegments.rightPanel.RightPanelController;
+import app.stages.mainview.mainviewsegments.bottom.BottomController;
+import app.stages.mainview.mainviewsegments.canvas.CanvasController;
+import app.stages.mainview.mainviewsegments.leftPanel.LeftPanelController;
+import app.stages.mainview.mainviewsegments.menuBar.MenuBarController;
+import app.stages.mainview.mainviewsegments.rightPanel.RightPanelController;
 import app.basics.FamilyMember;
-import app.basics.PannableCanvas;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -129,7 +129,10 @@ public class MainViewController implements Initializable {
             rightPanelController.setVisible(newValue != null);
 
             if (newValue != null) {
-                rightPanelController.fillRightPanel(familyMembersHashMap.get(newValue));
+                FamilyMember familyMember = familyMembersHashMap.get(newValue); //why can i get null??? null means then i clicked something what is not Rectangle...
+                if(familyMember != null){
+                    rightPanelController.fillRightPanel(familyMember);
+                }
                 Rectangle newRectangle = canvasController.pannableCanvas.getCurrentRectangle();
 
                 newRectangle.setStroke(Color.ORANGE);
@@ -137,10 +140,14 @@ public class MainViewController implements Initializable {
                 newRectangle.setStrokeWidth(3);
             }
             if (oldValue != null) {
-                Rectangle oldRectangle = (Rectangle) canvasController.pannableCanvas.lookup("#" + oldValue);
-                oldRectangle.setStroke(Color.BLUE);
-                oldRectangle.setStrokeType(StrokeType.CENTERED);
-                oldRectangle.setStrokeWidth(1);
+                //after deleting from canvas old rectangle can be null
+                Node node = canvasController.pannableCanvas.lookup("#" + oldValue);
+                if(node instanceof Rectangle) {
+                    Rectangle oldRectangle = (Rectangle) node;
+                    oldRectangle.setStroke(Color.BLUE);
+                    oldRectangle.setStrokeType(StrokeType.CENTERED);
+                    oldRectangle.setStrokeWidth(1);
+                }
             }
         });
 

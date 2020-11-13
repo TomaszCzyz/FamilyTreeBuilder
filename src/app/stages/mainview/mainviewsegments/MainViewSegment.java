@@ -1,8 +1,7 @@
-package app.stages.mainview.mainViewSegments;
+package app.stages.mainview.mainviewsegments;
 
 import app.stages.mainview.MainViewController;
-import app.basics.PannableCanvas;
-import app.stages.mainview.mainViewSegments.canvas.CanvasController;
+import app.stages.mainview.mainviewsegments.canvas.CanvasController;
 
 public class MainViewSegment {
 

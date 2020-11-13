@@ -1,7 +1,7 @@
-package app.stages.mainview.mainViewSegments.leftPanel;
+package app.stages.mainview.mainviewsegments.leftPanel;
 
 import app.stages.addfamilymember.AddMemberController;
-import app.stages.mainview.mainViewSegments.MainViewSegment;
+import app.stages.mainview.mainviewsegments.MainViewSegment;
 import app.basics.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -81,8 +81,8 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
         } else {
             boolean answer = ConfirmBox.display("Delete", "Sure you want to delete family member permanently?");
             if (answer) {
+                mainViewController.getCanvasController().delFromCanvas(famMemId);
                 mainViewController.getFamilyMembersHashMap().remove(famMemId);
-                mainViewController.getCanvasController().delBoxFromCanvas(famMemId);
                 mainViewController.getRightPanelController().setVisible(false);
             }
         }

@@ -1,7 +1,7 @@
-package app.stages.mainview.mainViewSegments.menuBar;
+package app.stages.mainview.mainviewsegments.menuBar;
 
 import app.basics.LinkType;
-import app.stages.mainview.mainViewSegments.MainViewSegment;
+import app.stages.mainview.mainviewsegments.MainViewSegment;
 import app.stages.newmenuitem.NewMenuItemController;
 import app.basics.ConfirmBox;
 import app.basics.FamilyMember;
@@ -23,7 +23,6 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /*

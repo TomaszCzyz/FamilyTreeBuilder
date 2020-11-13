@@ -1,24 +1,13 @@
-package app.stages.mainview.mainViewSegments.rightPanel;
+package app.stages.mainview.mainviewsegments.rightPanel;
 
 import app.basics.LinkType;
-import app.stages.mainview.mainViewSegments.MainViewSegment;
-import app.basics.AlertBox;
+import app.stages.mainview.mainviewsegments.MainViewSegment;
 import app.basics.ConfirmBox;
 import app.basics.FamilyMember;
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
-
-import java.time.LocalDate;
-import java.util.Map;
 
 public class RightPanelController extends MainViewSegment {
 
@@ -51,13 +40,13 @@ public class RightPanelController extends MainViewSegment {
 
     @FXML
     public void handleMotherLinkButtonAction() {
-        canvasController.linkFrom(canvasController.pannableCanvas.getCurrentRectangle(), LinkType.MOTHER);
+        canvasController.addLinkFrom(canvasController.pannableCanvas.getCurrentRectangle(), LinkType.MOTHER);
     }
 
 
     @FXML
     public void handleSpouseLinkButtonAction() {
-        canvasController.linkFrom(canvasController.pannableCanvas.getCurrentRectangle(), LinkType.SPOUSE);
+        canvasController.addLinkFrom(canvasController.pannableCanvas.getCurrentRectangle(), LinkType.SPOUSE);
     }
 
 
@@ -68,9 +57,9 @@ public class RightPanelController extends MainViewSegment {
         if (answer) {
             String childId = canvasController.pannableCanvas.getCurrentNodeId();
             String motherId = mainViewController.getFamilyMembersHashMap().get(childId).getMotherId();
-            mainViewController.getCanvasController().delLinkFromTo(childId, motherId);
 
             mainViewController.getFamilyMembersHashMap().get(childId).setMotherId("");
+            mainViewController.getCanvasController().delLinkFromTo(childId, motherId);
 
             //refresh rightPanel (to change button del(Link) to link)
             fillRightPanel(mainViewController.getFamilyMembersHashMap().get(childId));
@@ -92,6 +81,7 @@ public class RightPanelController extends MainViewSegment {
             delMotherLinkButton.setVisible(false);
         }
     }
+
 
     public final void setVisible(boolean b) {
         rightPanelVBox.setVisible(b);

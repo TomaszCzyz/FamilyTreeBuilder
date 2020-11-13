@@ -1,14 +1,13 @@
-package app.stages.mainview.mainViewSegments.canvas;
+package app.stages.mainview.mainviewsegments.canvas;
 
 import app.basics.*;
-import app.stages.mainview.mainViewSegments.MainViewSegment;
+import app.stages.mainview.mainviewsegments.MainViewSegment;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
@@ -20,6 +19,7 @@ import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -80,7 +80,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
     /*
      * linke startRectangle with next selected currentNode with link of type linkType
      */
-    public void linkFrom(Rectangle startRectangle, LinkType linkType) {
+    public void addLinkFrom(Rectangle startRectangle, LinkType linkType) {
         //setMouseTransparent is used to prevent pressing buttons in right panel till linking operation ends
         mainViewController.getRightPanelController().rightPanelVBox.setDisable(true);
         markRectangle(startRectangle, linkType);
@@ -115,7 +115,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
     public void createLineFromTo(Rectangle start, Rectangle end, LinkType linkType) {
         Line line = new Line();
-        line.setId(start.getId() + "->" + end.getId());
+        line.setId(start.getId() + end.getId());
 
         switch (linkType) {
             case MOTHER:
@@ -123,9 +123,6 @@ public class CanvasController extends MainViewSegment implements Initializable {
                 line.startYProperty().bind(start.translateYProperty());
                 line.endXProperty().bind(Bindings.add(end.translateXProperty(), 0.5 * end.getWidth()));
                 line.endYProperty().bind(Bindings.add(end.translateYProperty(), end.getHeight()));
-
-                Double value = line.translateXProperty().getValue();
-                Double value1 = start.translateXProperty().getValue();
                 break;
             case SPOUSE:
                 /*
@@ -187,9 +184,11 @@ public class CanvasController extends MainViewSegment implements Initializable {
     }
 
 
-    public void delBoxFromCanvas(String familyMemberId) {
+    public void delFromCanvas(String familyMemberId) {
+//        canvasController.pannableCanvas.setCurrentNodeId("");
+        Node node;
         //deleting rectangle
-        Node node = pannableCanvas.lookup("#" + familyMemberId);
+        node = pannableCanvas.lookup("#" + familyMemberId);
         if (node != null) {
             pannableCanvas.getChildren().remove(node);
         }
@@ -198,6 +197,29 @@ public class CanvasController extends MainViewSegment implements Initializable {
         if (node != null) {
             pannableCanvas.getChildren().remove(node);
         }
+        //deleting link to mother if exists
+        String motherId = mainViewController.getFamilyMembersHashMap().get(familyMemberId).getMotherId();
+        if(motherId != null) {
+            node = pannableCanvas.lookup("#" + familyMemberId + motherId);
+            if (node != null) {
+                pannableCanvas.getChildren().remove(node);
+            }
+        }
+        //deleting link to partners if exists
+        List<String> partners = mainViewController.getFamilyMembersHashMap().get(familyMemberId).getPartners();
+        for(String partnerId : partners) {
+            //we dont know from who line was add, so we must check to possibilities
+            node = pannableCanvas.lookup("#" + familyMemberId + partnerId);
+            if (node != null) {
+                pannableCanvas.getChildren().remove(node);
+            } else {
+                node = pannableCanvas.lookup("#" + partnerId + familyMemberId);
+                if (node != null) {
+                    pannableCanvas.getChildren().remove(node);
+                }
+            }
+        }
+
     }
 
 

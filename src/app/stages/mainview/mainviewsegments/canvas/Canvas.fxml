@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.BorderPane?>
 <?import app.basics.PannableCanvas?>
 
 <AnchorPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" HBox.hgrow="ALWAYS"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="app.stages.mainview.mainViewSegments.canvas.CanvasController">
+            fx:controller="app.stages.mainview.mainviewsegments.canvas.CanvasController">
     <PannableCanvas fx:id="pannableCanvas" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" BorderPane.alignment="CENTER"/>
 </AnchorPane>

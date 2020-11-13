@@ -69,7 +69,7 @@ public class SceneGestures {
                 return;
 
             if(mousePressedDuration() < 200) {
-                pannableCanvas.setCurrentNodeId(null);
+                pannableCanvas.setCurrentNodeId("");
                 pannableCanvas.setCurrentRectangle(null);
             }
 
