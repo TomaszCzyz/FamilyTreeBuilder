@@ -1,5 +1,6 @@
 package app.stages.mainview.mainViewSegments.rightPanel;
 
+import app.basics.LinkType;
 import app.stages.mainview.mainViewSegments.MainViewSegment;
 import app.basics.AlertBox;
 import app.basics.ConfirmBox;
@@ -50,14 +51,14 @@ public class RightPanelController extends MainViewSegment {
 
     @FXML
     public void handleMotherLinkButtonAction() {
-        canvasController.linkFrom(canvasController.pannableCanvas.getCurrentRectangle(), "toMother");
+        canvasController.linkFrom(canvasController.pannableCanvas.getCurrentRectangle(), LinkType.MOTHER);
     }
+
 
     @FXML
     public void handleSpouseLinkButtonAction() {
-        canvasController.linkFrom(canvasController.pannableCanvas.getCurrentRectangle(), "toSpouse");
+        canvasController.linkFrom(canvasController.pannableCanvas.getCurrentRectangle(), LinkType.SPOUSE);
     }
-
 
 
     @FXML

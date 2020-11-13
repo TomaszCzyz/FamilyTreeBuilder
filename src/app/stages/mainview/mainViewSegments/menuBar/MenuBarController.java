@@ -1,10 +1,12 @@
 package app.stages.mainview.mainViewSegments.menuBar;
 
+import app.basics.LinkType;
 import app.stages.mainview.mainViewSegments.MainViewSegment;
 import app.stages.newmenuitem.NewMenuItemController;
 import app.basics.ConfirmBox;
 import app.basics.FamilyMember;
 import com.opencsv.bean.*;
+import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import javafx.beans.property.BooleanProperty;
@@ -21,6 +23,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /*
@@ -98,7 +101,7 @@ public class MenuBarController extends MainViewSegment {
             handleNewMenuItemAction();
         }
         if (ifCanSave.getValue()) {
-            //update coordinates of familyMembers
+            //updating coordinates of familyMembers
             canvasController.pannableCanvas.getChildren().forEach(node -> {
                 if (node instanceof Rectangle) {
                     FamilyMember familyMember = mainViewController.getFamilyMembersHashMap().get(node.getId());
@@ -109,17 +112,11 @@ public class MenuBarController extends MainViewSegment {
 
             List<FamilyMember> familyMemberList = new ArrayList<>(mainViewController.getFamilyMembersHashMap().values());
 
-            System.out.println(saveURL);
-
-//            Writer writer = new FileWriter(saveURL);
             Writer writer = new FileWriter("outfile1.csv");
 //            writer.append(Arrays.toString(new String[]{"id", "posX", "posY", "firstName", "secondName", "lastName", "birthDate", "notes", "fatherId", "motherId", "partners"}).append('\n'));
 
             StatefulBeanToCsvBuilder<FamilyMember> builder = new StatefulBeanToCsvBuilder<>(writer);
-            StatefulBeanToCsv<FamilyMember> beanWriter = builder
-//                    .withSeparator(',')
-//                    .withQuotechar('"')
-                    .build();
+            StatefulBeanToCsv<FamilyMember> beanWriter = builder/*.withSeparator(',').withQuotechar('"')*/.build();
 
             beanWriter.write(familyMemberList);
             writer.close();
@@ -139,6 +136,7 @@ public class MenuBarController extends MainViewSegment {
             FileReader fileReader = new FileReader("outfile.csv");
             CsvToBeanBuilder<FamilyMember> builder = new CsvToBeanBuilder<>(fileReader);
             List<FamilyMember> familyMemberList = builder
+                    .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_QUOTES)
                     .withType(FamilyMember.class).build().parse();
 
             familyMemberList.forEach(System.out::println);
@@ -151,15 +149,15 @@ public class MenuBarController extends MainViewSegment {
             //linking added rectangles
             for (var familyMember : familyMemberList) {
                 if (!familyMember.getMotherId().equals("")) {
-//                    System.out.println(familyMember.getId() + ": " + lookFor(familyMember.getId()));
-//                    System.out.println(familyMember.getMotherId() + " " + lookFor(familyMember.getMotherId()));
-                    canvasController.createLineFromTo(lookFor(familyMember.getId()), lookFor(familyMember.getMotherId()), "toMother");
+                    canvasController.createLineFromTo(lookFor(familyMember.getId()), lookFor(familyMember.getMotherId()), LinkType.MOTHER);
                 }
-//                if (!familyMember.getPartners().isEmpty()) {
-//                    for(var partnerId : familyMember.getPartners()) {
-//                        canvasController.createLineFromTo(lookFor(familyMember.getId()), lookFor(partnerId), "toSpouse");
-//                    }
-//                }
+                if (!familyMember.getPartners().isEmpty()) {
+                    System.out.println(familyMember.getPartners());
+                    System.out.println(familyMember.getPartners().size());
+                    for (String partnerId : familyMember.getPartners()) {
+                        canvasController.createLineFromTo(lookFor(familyMember.getId()), lookFor(partnerId), LinkType.SPOUSE);
+                    }
+                }
             }
 
         } catch (FileNotFoundException e) {
@@ -167,12 +165,12 @@ public class MenuBarController extends MainViewSegment {
         }
     }
 
-    public Rectangle lookFor(String id) {
+    public final Rectangle lookFor(String id) {
         Node node = canvasController.pannableCanvas.lookup("#" + id);
         if (node instanceof Rectangle){
             return (Rectangle) node;
         }
-        return (Rectangle) canvasController.pannableCanvas.getChildren().get(0); //theoreticly it should never have happen...
+        return (Rectangle) canvasController.pannableCanvas.getChildren().get(0); //theoretically it should never have happen...
     }
 
 

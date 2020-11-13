@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
-import org.w3c.dom.css.Rect;
+import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -33,6 +33,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
 
     public void initializeSceneGestures() {
+
         SceneGestures sceneGestures = new SceneGestures(pannableCanvas);
         anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
         anchorPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
@@ -43,12 +44,13 @@ public class CanvasController extends MainViewSegment implements Initializable {
     }
 
     public void addMemberToBoard(FamilyMember familyMember) {
+
         Rectangle rectangle = new Rectangle(100, 50);
         rectangle.setId(familyMember.getId());
 
         rectangle.setTranslateX(familyMember.getPosX());
         rectangle.setTranslateY(familyMember.getPosY());
-        
+
         rectangle.setStroke(Color.BLUE);
         rectangle.setFill(Color.BLUE.deriveColor(1, 1, 1, 0.5));
 
@@ -59,27 +61,26 @@ public class CanvasController extends MainViewSegment implements Initializable {
         rectangle.addEventFilter(MouseEvent.MOUSE_RELEASED, nodeGestures.getOnMouseReleasedEventHandler());
         rectangle.addEventFilter(MouseEvent.MOUSE_CLICKED, nodeGestures.getOnMouseClickedEventHandler());
 
-        Label personalDataLabel = new Label();
-        personalDataLabel.setId(familyMember.getId() + "label");
+        Text personalDataLabel = new Text();
+        personalDataLabel.setId(familyMember.getId() + "text");
         personalDataLabel.setMouseTransparent(true);
-        personalDataLabel.setTranslateX(familyMember.getPosX() + 10);
-        personalDataLabel.setTranslateY(familyMember.getPosY() + 10);
-        personalDataLabel.translateXProperty().bind(rectangle.translateXProperty());
-        personalDataLabel.translateYProperty().bind(rectangle.translateYProperty());
+        personalDataLabel.translateXProperty().bind(Bindings.add(rectangle.translateXProperty(), 10d));
+        personalDataLabel.translateYProperty().bind(Bindings.add(rectangle.translateYProperty(), 15d));
         personalDataLabel.setText(familyMember.getFirstName() + " " + familyMember.getLastName() + "\n" +
                 "secondname: " + familyMember.getSecondName() + "\n" +
-                "-----------------------------"); //it determines min rectangle width
+                "-------------"); //it determines min rectangle width
 
-        //instead of this, better make bounds for text length (otherwise rectangle can be too big)
-        rectangle.widthProperty().bind(personalDataLabel.widthProperty());
+        personalDataLabel.setWrappingWidth(100);
+        rectangle.widthProperty().bind(personalDataLabel.wrappingWidthProperty());
 
         pannableCanvas.getChildren().addAll(rectangle, personalDataLabel);
     }
 
 
     /*
-     * linke startRectangle with next selected currentNode with link of type linkType*/
-    public void linkFrom(Rectangle startRectangle, String linkType) {
+     * linke startRectangle with next selected currentNode with link of type linkType
+     */
+    public void linkFrom(Rectangle startRectangle, LinkType linkType) {
         //setMouseTransparent is used to prevent pressing buttons in right panel till linking operation ends
         mainViewController.getRightPanelController().rightPanelVBox.setDisable(true);
         markRectangle(startRectangle, linkType);
@@ -93,29 +94,40 @@ public class CanvasController extends MainViewSegment implements Initializable {
                     Rectangle endRectangle = pannableCanvas.getCurrentRectangle();
 
                     createLineFromTo(startRectangle, endRectangle, linkType);
+
+                    switch (linkType){
+                        case MOTHER:
+                            mainViewController.getFamilyMembersHashMap().get(startRectangle.getId()).setMotherId(endRectangle.getId());
+                            break;
+                        case SPOUSE:
+                            mainViewController.getFamilyMembersHashMap().get(startRectangle.getId()).getPartners().add(endRectangle.getId());
+                            mainViewController.getFamilyMembersHashMap().get(endRectangle.getId()).getPartners().add(startRectangle.getId());
+                            break;
+                    }
                 }
                 unmarkRectangle(startRectangle);
-                mainViewController.getRightPanelController().rightPanelVBox.setDisable(true);
+                mainViewController.getRightPanelController().rightPanelVBox.setDisable(false);
                 pannableCanvas.currentNodeIdProperty().removeListener(this);
             }
         };
         pannableCanvas.currentNodeIdProperty().addListener(listener);
     }
 
-    public void createLineFromTo(Rectangle start, Rectangle end, String linkType) {
+    public void createLineFromTo(Rectangle start, Rectangle end, LinkType linkType) {
         Line line = new Line();
-        line.setId(start.getId() + end.getId());
+        line.setId(start.getId() + "->" + end.getId());
 
         switch (linkType) {
-            case "toMother":
+            case MOTHER:
                 line.startXProperty().bind(Bindings.add(start.translateXProperty(), 0.5 * start.getWidth()));
                 line.startYProperty().bind(start.translateYProperty());
                 line.endXProperty().bind(Bindings.add(end.translateXProperty(), 0.5 * end.getWidth()));
                 line.endYProperty().bind(Bindings.add(end.translateYProperty(), end.getHeight()));
 
-                mainViewController.getFamilyMembersHashMap().get(start.getId()).setMotherId(end.getId());
+                Double value = line.translateXProperty().getValue();
+                Double value1 = start.translateXProperty().getValue();
                 break;
-            case "toSpouse":
+            case SPOUSE:
                 /*
                 Depending on which rectangle is on the right/left, connecting line changes its anchor points
                 in other words: line is always between rectangles
@@ -131,10 +143,6 @@ public class CanvasController extends MainViewSegment implements Initializable {
                         .then(end.translateXProperty())
                         .otherwise(Bindings.add(end.translateXProperty(), end.getWidth())));
                 line.endYProperty().bind(Bindings.add(end.translateYProperty(), 0.5 * end.getHeight()));
-
-
-                mainViewController.getFamilyMembersHashMap().get(start.getId()).getPartners().add(end.getId());
-                mainViewController.getFamilyMembersHashMap().get(end.getId()).getPartners().add(start.getId());
                 break;
         }
         line.toBack();
@@ -142,16 +150,18 @@ public class CanvasController extends MainViewSegment implements Initializable {
     }
 
 
-    private void markRectangle(Rectangle r, String markType) {
+    private void markRectangle(Rectangle r, LinkType linkType) {
         r.setStrokeType(StrokeType.OUTSIDE);
         r.setStrokeWidth(3);
-        switch (markType) {
-            case "toMother":
+        switch (linkType) {
+            case MOTHER:
                 r.setStroke(Color.RED);
                 break;
-            case "toSpouse":
+            case SPOUSE:
                 r.setStroke(Color.GREEN);
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + linkType);
         }
     }
 
@@ -178,13 +188,18 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
 
     public void delBoxFromCanvas(String familyMemberId) {
-        for (int i = 0; i < 2; ++i) {    //we need to remove rectangle and label
-            Node node = pannableCanvas.lookup("#" + familyMemberId);
-            if (node != null) {
-                pannableCanvas.getChildren().remove(node);
-            }
+        //deleting rectangle
+        Node node = pannableCanvas.lookup("#" + familyMemberId);
+        if (node != null) {
+            pannableCanvas.getChildren().remove(node);
+        }
+        //deleting text (inside Rectangle)
+        node = pannableCanvas.lookup("#" + familyMemberId + "text");
+        if (node != null) {
+            pannableCanvas.getChildren().remove(node);
         }
     }
+
 
     public void delLinkFromTo(String startId, String endId) {
         Node node = pannableCanvas.lookup("#" + startId + endId);
@@ -196,7 +211,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-
+        pannableCanvas.setLayoutX(100d);
+        pannableCanvas.setLayoutY(100d);
     }
 }

@@ -7,6 +7,15 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="gson-2.8.6" level="project" />
+    <orderEntry type="library" name="2.14" level="project" />
+    <orderEntry type="library" name="2.141" level="project" />
+    <orderEntry type="library" name="opencsv-5.3" level="project" />
+    <orderEntry type="library" name="commons-beanutils-1.9.4" level="project" />
+    <orderEntry type="library" name="commons-text-1.9" level="project" />
+    <orderEntry type="library" name="commons-lang3-3.11" level="project" />
+    <orderEntry type="library" name="commons-collections4-4.4" level="project" />
+    <orderEntry type="library" name="commons-logging-1.2" level="project" />
+    <orderEntry type="library" name="commons-collections-3.2.2" level="project" />
   </component>
 </module>
-
