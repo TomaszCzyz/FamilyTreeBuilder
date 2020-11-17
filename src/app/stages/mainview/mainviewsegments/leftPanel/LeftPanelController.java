@@ -3,19 +3,25 @@ package app.stages.mainview.mainviewsegments.leftPanel;
 import app.stages.addfamilymember.AddMemberController;
 import app.stages.mainview.mainviewsegments.MainViewSegment;
 import app.basics.*;
+import app.stages.mainview.mainviewsegments.canvas.CanvasController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public class LeftPanelController extends MainViewSegment implements Initializable {
@@ -30,6 +36,8 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
     public Button zoomOutButton;
     @FXML
     public Button delButton;
+    @FXML
+    public ToggleButton anchorToggleButton;
 
     public LeftPanelController() {
         injectMainViewController(mainViewController);
@@ -84,6 +92,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
                 mainViewController.getCanvasController().delFromCanvas(famMemId);
                 mainViewController.getFamilyMembersHashMap().remove(famMemId);
                 mainViewController.getRightPanelController().setVisible(false);
+                canvasController.pannableCanvas.resetCurrentNode();
             }
         }
     }
@@ -112,8 +121,31 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
         canvasController.pannableCanvas.setScale(scale);
     }
 
+    @FXML
+    public void handleAnchorToggleButtonAction() {
+//        mainViewController.getRightPanelController().rightPanelVBox.setDisable(anchorToggleButton.isSelected());
+//
+//        if(anchorToggleButton.isSelected()) {
+//            canvasController.pannableCanvas.resetCurrentNode();
+//
+//            Map<CanvasController.Coords, Set<String>> tiedGroups = canvasController.getTiedGroups();
+//
+//            canvasController.pannableCanvas.currentNodeIdProperty().addListener((observable, oldValue, newValue) -> {
+//                if (!newValue.equals("")) {
+//                    if(tiedGroups.isEmpty()) {
+//                        Set<String> newTiedGroup = new HashSet<>();
+//
+//                        newTiedGroup.add(newValue);
+//                        tiedGroups.add(newTiedGroup);
+//                    }
+//                }
+//            });
+//
+//        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
     }
+
 }

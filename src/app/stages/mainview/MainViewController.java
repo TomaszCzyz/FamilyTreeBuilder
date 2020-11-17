@@ -17,9 +17,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainViewController implements Initializable {
 
@@ -39,9 +37,15 @@ public class MainViewController implements Initializable {
     @FXML
     private BottomController bottomController;
 
-    private final Configuration configuration = Configuration.getInstance();
+    private final Configuration configuration;
 
-    private final HashMap<String, FamilyMember> familyMembersHashMap = new HashMap<>();
+    private HashMap<String, FamilyMember> familyMembersHashMap;
+
+
+    public MainViewController() {
+        this.configuration = Configuration.getInstance();
+        this.familyMembersHashMap = new HashMap<>();
+    }
 
 
     public void printFamilyMembersHashMap() {
@@ -125,22 +129,18 @@ public class MainViewController implements Initializable {
 
         //action when user click on rectangle or on board
         canvasController.pannableCanvas.currentNodeIdProperty().addListener((v, oldValue, newValue) -> {
-            System.out.println("new: " + newValue);
-            rightPanelController.setVisible(newValue != null);
+            Rectangle newRectangle = canvasController.pannableCanvas.getCurrentRectangle();
+            rightPanelController.setVisible(newRectangle != null);
 
-            if (newValue != null) {
-                FamilyMember familyMember = familyMembersHashMap.get(newValue); //why can i get null??? null means then i clicked something what is not Rectangle...
-                if(familyMember != null){
-                    rightPanelController.fillRightPanel(familyMember);
-                }
-                Rectangle newRectangle = canvasController.pannableCanvas.getCurrentRectangle();
+            if(newRectangle != null){
+                rightPanelController.fillRightPanel(familyMembersHashMap.get(newRectangle.getId()));
 
                 newRectangle.setStroke(Color.ORANGE);
                 newRectangle.setStrokeType(StrokeType.OUTSIDE);
                 newRectangle.setStrokeWidth(3);
             }
             if (oldValue != null) {
-                //after deleting from canvas old rectangle can be null
+                //after deleting from canvas, rectangle with oldValue can be null
                 Node node = canvasController.pannableCanvas.lookup("#" + oldValue);
                 if(node instanceof Rectangle) {
                     Rectangle oldRectangle = (Rectangle) node;
@@ -149,6 +149,7 @@ public class MainViewController implements Initializable {
                     oldRectangle.setStrokeWidth(1);
                 }
             }
+            System.out.println("new: " + newValue);
         });
 
         centerHbox.setBorder(new Border(new BorderStroke(Color.BLUE,

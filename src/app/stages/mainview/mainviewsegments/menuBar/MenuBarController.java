@@ -126,6 +126,7 @@ public class MenuBarController extends MainViewSegment {
         saveURL = url;
         ifCanSave.setValue(true);
 
+        //clearing canvas
         if (!mainViewController.getFamilyMembersHashMap().isEmpty()) {
             mainViewController.getFamilyMembersHashMap().clear();
         }
@@ -148,23 +149,23 @@ public class MenuBarController extends MainViewSegment {
             //linking added rectangles
             for (var familyMember : familyMemberList) {
                 if (!familyMember.getMotherId().equals("")) {
-                    canvasController.createLineFromTo(lookFor(familyMember.getId()), lookFor(familyMember.getMotherId()), LinkType.MOTHER);
+                    canvasController.createLineFromTo(lookForRectangle(familyMember.getId()), lookForRectangle(familyMember.getMotherId()), LinkType.MOTHER);
                 }
                 if (!familyMember.getPartners().isEmpty()) {
-                    System.out.println(familyMember.getPartners());
-                    System.out.println(familyMember.getPartners().size());
                     for (String partnerId : familyMember.getPartners()) {
-                        canvasController.createLineFromTo(lookFor(familyMember.getId()), lookFor(partnerId), LinkType.SPOUSE);
+                        //add only if there is no line between rectangle yet
+                        if(canvasController.pannableCanvas.lookup("#" + partnerId + familyMember.getId()) == null) {
+                            canvasController.createLineFromTo(lookForRectangle(familyMember.getId()), lookForRectangle(partnerId), LinkType.SPOUSE);
+                        }
                     }
                 }
             }
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    public final Rectangle lookFor(String id) {
+    public final Rectangle lookForRectangle(String id) {
         Node node = canvasController.pannableCanvas.lookup("#" + id);
         if (node instanceof Rectangle){
             return (Rectangle) node;

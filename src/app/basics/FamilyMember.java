@@ -175,4 +175,23 @@ public class FamilyMember implements Serializable {
     public void setPartners(List<String> partners) {
         this.partners = partners;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FamilyMember that = (FamilyMember) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(firstName, that.firstName) &&
+                Objects.equals(secondName, that.secondName) &&
+                Objects.equals(lastName, that.lastName) &&
+                Objects.equals(birthDate, that.birthDate) &&
+                Objects.equals(fatherId, that.fatherId) &&
+                Objects.equals(motherId, that.motherId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, secondName);
+    }
 }

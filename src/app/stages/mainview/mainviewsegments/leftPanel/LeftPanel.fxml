@@ -2,30 +2,34 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="leftPanelVBox" spacing="5.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="app.stages.mainview.mainviewsegments.leftPanel.LeftPanelController">
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<VBox fx:id="leftPanelVBox" spacing="5.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.stages.mainview.mainviewsegments.leftPanel.LeftPanelController">
     <padding>
-        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
     </padding>
-    <Button fx:id="addButton" mnemonicParsing="false" onAction="#handleAddMemberButtonAction" prefHeight="35.0"
-            prefWidth="35.0" text="Add">
+    <Button fx:id="addButton" mnemonicParsing="false" onAction="#handleAddMemberButtonAction" prefHeight="35.0" prefWidth="35.0" text="Add">
         <font>
-        <Font size="10.0"/>
+        <Font size="10.0" />
         </font>
     </Button>
-    <Button fx:id="delButton" mnemonicParsing="false" onAction="#handleDelMemberButtonAction" prefHeight="35.0"
-            prefWidth="35.0" text="Del">
+    <Button fx:id="delButton" mnemonicParsing="false" onAction="#handleDelMemberButtonAction" prefHeight="35.0" prefWidth="35.0" text="Del">
         <font>
-            <Font size="10.0"/>
+            <Font size="10.0" />
         </font>
     </Button>
-    <Button fx:id="zoomInButton" onAction="#handleZoomInButtonAction" layoutX="10.0" layoutY="10.0"
-            mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="+"/>
-    <Button fx:id="zoomOutButton" onAction="#handleZoomOutButtonAction" layoutX="10.0" layoutY="10.0"
-            mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="-"/>
+    <Button fx:id="zoomInButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleZoomInButtonAction" prefHeight="35.0" prefWidth="35.0" text="+" />
+    <Button fx:id="zoomOutButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleZoomOutButtonAction" prefHeight="35.0" prefWidth="35.0" text="-" />
+   <ToggleButton fx:id="anchorToggleButton" onAction="#handleAnchorToggleButtonAction" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" maxHeight="35.0" minWidth="35.0">
+       <graphic>
+           <ImageView fitHeight="24" fitWidth="24" pickOnBounds="true" preserveRatio="true">
+               <Image url="@/anchor-small.png"/>
+           </ImageView>
+       </graphic>
+   </ToggleButton>
 </VBox>

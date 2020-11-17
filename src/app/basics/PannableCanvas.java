@@ -93,6 +93,11 @@ public class PannableCanvas extends Pane {
     public void setCurrentRectangle(Rectangle currentRectangle) {
         this.currentRectangle = currentRectangle;
     }
+
+    public void resetCurrentNode() {
+        currentRectangle = null;
+        currentNodeId.setValue("");
+    }
 }
 
 

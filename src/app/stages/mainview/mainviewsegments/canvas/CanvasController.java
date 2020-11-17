@@ -3,6 +3,7 @@ package app.stages.mainview.mainviewsegments.canvas;
 import app.basics.*;
 import app.stages.mainview.mainviewsegments.MainViewSegment;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -29,6 +30,23 @@ public class CanvasController extends MainViewSegment implements Initializable {
     @FXML
     public AnchorPane anchorPane;
 
+    private final Map<String, Rectangle> rectangles;
+
+    public static class Coords {
+        public final DoubleProperty x;
+        public final DoubleProperty y;
+        public Coords(DoubleProperty x, DoubleProperty y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    private Map<Coords, Set<String>> tiedGroups;
+
+    public CanvasController() {
+        rectangles = new HashMap<>();
+    }
+
 
     public void initializeSceneGestures() {
 
@@ -42,9 +60,10 @@ public class CanvasController extends MainViewSegment implements Initializable {
     }
 
     public void addMemberToBoard(FamilyMember familyMember) {
-
         Rectangle rectangle = new Rectangle(100, 50);
         rectangle.setId(familyMember.getId());
+
+        rectangles.put(familyMember.getId(), rectangle);
 
         rectangle.setTranslateX(familyMember.getPosX());
         rectangle.setTranslateY(familyMember.getPosY());
@@ -93,7 +112,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
                     createLineFromTo(startRectangle, endRectangle, linkType);
 
-                    switch (linkType){
+                    switch (linkType) {
                         case MOTHER:
                             mainViewController.getFamilyMembersHashMap().get(startRectangle.getId()).setMotherId(endRectangle.getId());
                             break;
@@ -110,6 +129,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
         };
         pannableCanvas.currentNodeIdProperty().addListener(listener);
     }
+
 
     public void createLineFromTo(Rectangle start, Rectangle end, LinkType linkType) {
         Line line = new Line();
@@ -174,7 +194,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
         LocalDate childBirthDate = family.get(childId).getBirthDate();
         if (fatherBirthDate != null && childBirthDate != null) {
             if (fatherBirthDate.isAfter(childBirthDate)) {
-                AlertBox.display("Invalid family member", "Father has to be older!");
+                AlertBox.display("Invalid family member", "Mother has to be older!");
                 return false;
             }
         }
@@ -194,7 +214,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
         }
 
         mainViewController.getFamilyMembersHashMap().forEach((id, familyMember) -> {
-            if(!familyMember.getMotherId().isEmpty() && familyMemberId.equals(familyMember.getMotherId())) {
+            if (!familyMember.getMotherId().isEmpty() && familyMemberId.equals(familyMember.getMotherId())) {
                 //this means that there is link (from child to mother) to Rectangle which we want to delete
                 selectors.add(familyMember.getId() + familyMemberId);
             }
@@ -207,8 +227,6 @@ public class CanvasController extends MainViewSegment implements Initializable {
         Set<Node> nodes = new HashSet<>();
         selectors.forEach(selector -> nodes.addAll(pannableCanvas.lookupAll("#" + selector)));
 
-        nodes.forEach(System.out::println);
-
         pannableCanvas.getChildren().removeAll(nodes);
     }
 
@@ -220,6 +238,13 @@ public class CanvasController extends MainViewSegment implements Initializable {
         }
     }
 
+    public Map<String, Rectangle> getRectangles() {
+        return rectangles;
+    }
+
+    public Map<Coords, Set<String>> getTiedGroups() {
+        return tiedGroups;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

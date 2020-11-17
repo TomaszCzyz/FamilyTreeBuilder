@@ -73,11 +73,10 @@ public class NodeGestures {
                 return;
 
             if(mousePressedDuration() < 200) {
-//                Node node = (Node) event.getSource();
                 Rectangle rectangle = (Rectangle) event.getSource();
 
                 //order matters because setting currentNodeId initialize listener
-                pannableCanvas.setCurrentRectangle((Rectangle) rectangle);
+                pannableCanvas.setCurrentRectangle(rectangle);
                 pannableCanvas.setCurrentNodeId(rectangle.getId());
 
                 event.consume();
