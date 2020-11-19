@@ -3,7 +3,6 @@ package app.stages.mainview.mainviewsegments.canvas;
 import app.basics.*;
 import app.stages.mainview.mainviewsegments.MainViewSegment;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -32,19 +31,12 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
     private final Map<String, Rectangle> rectangles;
 
-    public static class Coords {
-        public final DoubleProperty x;
-        public final DoubleProperty y;
-        public Coords(DoubleProperty x, DoubleProperty y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
+    private final Map<String, Set<String>> tiedGroups;
 
-    private Map<Coords, Set<String>> tiedGroups;
 
     public CanvasController() {
         rectangles = new HashMap<>();
+        tiedGroups = new HashMap<>();
     }
 
 
@@ -164,6 +156,9 @@ public class CanvasController extends MainViewSegment implements Initializable {
         pannableCanvas.getChildren().add(line);
     }
 
+    public void markRectangle(Rectangle r, Color c) {
+        r.setFill(c);
+    }
 
     private void markRectangle(Rectangle r, LinkType linkType) {
         r.setStrokeType(StrokeType.OUTSIDE);
@@ -242,7 +237,7 @@ public class CanvasController extends MainViewSegment implements Initializable {
         return rectangles;
     }
 
-    public Map<Coords, Set<String>> getTiedGroups() {
+    public Map<String, Set<String>> getTiedGroups() {
         return tiedGroups;
     }
 
