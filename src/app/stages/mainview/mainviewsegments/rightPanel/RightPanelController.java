@@ -40,13 +40,13 @@ public class RightPanelController extends MainViewSegment {
 
     @FXML
     public void handleMotherLinkButtonAction() {
-        canvasController.addLinkFrom(canvasController.pannableCanvas.getCurrentRectangle(), LinkType.MOTHER);
+        canvasController.addLinkFrom(canvasController.pannableCanvas.getCurrentBox(), LinkType.MOTHER);
     }
 
 
     @FXML
     public void handleSpouseLinkButtonAction() {
-        canvasController.addLinkFrom(canvasController.pannableCanvas.getCurrentRectangle(), LinkType.SPOUSE);
+        canvasController.addLinkFrom(canvasController.pannableCanvas.getCurrentBox(), LinkType.SPOUSE);
     }
 
 
@@ -55,7 +55,7 @@ public class RightPanelController extends MainViewSegment {
 
         boolean answer = ConfirmBox.display("Warning", "Sure you want to delete connection to mother?");
         if (answer) {
-            String childId = canvasController.pannableCanvas.getCurrentNodeId();
+            String childId = canvasController.pannableCanvas.getCurrentBoxId();
             String motherId = mainViewController.getFamilyMembersHashMap().get(childId).getMotherId();
 
             mainViewController.getFamilyMembersHashMap().get(childId).setMotherId("");

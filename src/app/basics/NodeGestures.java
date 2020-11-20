@@ -4,7 +4,6 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.shape.Rectangle;
 
 import static java.lang.System.currentTimeMillis;
 
@@ -73,11 +72,11 @@ public class NodeGestures {
                 return;
 
             if(mousePressedDuration() < 200) {
-                Rectangle rectangle = (Rectangle) event.getSource();
+                Node node = (Node) event.getSource();
 
                 //order matters because setting currentNodeId initialize listener
-                pannableCanvas.setCurrentRectangle(rectangle);
-                pannableCanvas.setCurrentNodeId(rectangle.getId());
+                pannableCanvas.setCurrentBox((FamilyMemberBox) node);
+                pannableCanvas.setCurrentBoxId(node.getId());
 
                 event.consume();
             }

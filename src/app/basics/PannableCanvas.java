@@ -8,16 +8,15 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 
 public class PannableCanvas extends Pane {
 
     DoubleProperty myScale = new SimpleDoubleProperty(1.0);
 
-    private final StringProperty currentNodeId = new SimpleStringProperty(null);
+    private final StringProperty currentBoxId = new SimpleStringProperty(null);
 
-    private Rectangle currentRectangle;
+    private FamilyMemberBox currentBox;
 
 
     public PannableCanvas() {
@@ -74,29 +73,29 @@ public class PannableCanvas extends Pane {
         setTranslateY(getTranslateY() - y);
     }
 
-    public String getCurrentNodeId() {
-        return currentNodeId.get();
+    public String getCurrentBoxId() {
+        return currentBoxId.get();
     }
 
-    public StringProperty currentNodeIdProperty() {
-        return currentNodeId;
+    public StringProperty currentBoxIdProperty() {
+        return currentBoxId;
     }
 
-    public void setCurrentNodeId(String currentNodeId) {
-        this.currentNodeId.set(currentNodeId);
+    public void setCurrentBoxId(String currentBoxId) {
+        this.currentBoxId.set(currentBoxId);
     }
 
-    public Rectangle getCurrentRectangle() {
-        return currentRectangle;
+    public FamilyMemberBox getCurrentBox() {
+        return currentBox;
     }
 
-    public void setCurrentRectangle(Rectangle currentRectangle) {
-        this.currentRectangle = currentRectangle;
+    public void setCurrentBox(FamilyMemberBox currentBox) {
+        this.currentBox = currentBox;
     }
 
     public void resetCurrentNode() {
-        currentRectangle = null;
-        currentNodeId.setValue("");
+        currentBox = null;
+        currentBoxId.setValue("");
     }
 }
 

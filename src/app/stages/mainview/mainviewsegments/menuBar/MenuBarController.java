@@ -1,5 +1,6 @@
 package app.stages.mainview.mainviewsegments.menuBar;
 
+import app.basics.FamilyMemberBox;
 import app.basics.LinkType;
 import app.stages.mainview.mainviewsegments.MainViewSegment;
 import app.stages.newmenuitem.NewMenuItemController;
@@ -144,18 +145,22 @@ public class MenuBarController extends MainViewSegment {
             //adding just rectangle with data
             for (var familyMember : familyMemberList) {
                 mainViewController.getFamilyMembersHashMap().put(familyMember.getId(), familyMember);
-                mainViewController.getCanvasController().addMemberToBoard(familyMember);
+                mainViewController.getCanvasController().addFamilyMemberBox(familyMember);
             }
             //linking added rectangles
             for (var familyMember : familyMemberList) {
                 if (!familyMember.getMotherId().equals("")) {
-                    canvasController.createLineFromTo(lookForRectangle(familyMember.getId()), lookForRectangle(familyMember.getMotherId()), LinkType.MOTHER);
+                    FamilyMemberBox start = canvasController.getBoxesMap().get(familyMember.getId());
+                    FamilyMemberBox end = canvasController.getBoxesMap().get(familyMember.getMotherId());
+                    canvasController.createLineFromTo(start, end, LinkType.MOTHER);
                 }
                 if (!familyMember.getPartners().isEmpty()) {
                     for (String partnerId : familyMember.getPartners()) {
                         //add only if there is no line between rectangle yet
                         if(canvasController.pannableCanvas.lookup("#" + partnerId + familyMember.getId()) == null) {
-                            canvasController.createLineFromTo(lookForRectangle(familyMember.getId()), lookForRectangle(partnerId), LinkType.SPOUSE);
+                            FamilyMemberBox start = canvasController.getBoxesMap().get(familyMember.getId());
+                            FamilyMemberBox end = canvasController.getBoxesMap().get(partnerId);
+                            canvasController.createLineFromTo(start, end, LinkType.SPOUSE);
                         }
                     }
                 }
@@ -163,14 +168,6 @@ public class MenuBarController extends MainViewSegment {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    public final Rectangle lookForRectangle(String id) {
-        Node node = canvasController.pannableCanvas.lookup("#" + id);
-        if (node instanceof Rectangle){
-            return (Rectangle) node;
-        }
-        return (Rectangle) canvasController.pannableCanvas.getChildren().get(0); //theoretically it should never have happen...
     }
 
 

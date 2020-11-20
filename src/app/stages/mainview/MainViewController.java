@@ -1,23 +1,25 @@
 package app.stages.mainview;
 
+import app.basics.FamilyMember;
+import app.basics.FamilyMemberBox;
 import app.configuration.Configuration;
 import app.stages.mainview.mainviewsegments.bottom.BottomController;
 import app.stages.mainview.mainviewsegments.canvas.CanvasController;
 import app.stages.mainview.mainviewsegments.leftPanel.LeftPanelController;
 import app.stages.mainview.mainviewsegments.menuBar.MenuBarController;
 import app.stages.mainview.mainviewsegments.rightPanel.RightPanelController;
-import app.basics.FamilyMember;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
 
@@ -128,25 +130,23 @@ public class MainViewController implements Initializable {
         }
 
         //action when user click on rectangle or on board
-        canvasController.pannableCanvas.currentNodeIdProperty().addListener((v, oldValue, newValue) -> {
-            Rectangle newRectangle = canvasController.pannableCanvas.getCurrentRectangle();
-            rightPanelController.setVisible(newRectangle != null);
+        canvasController.pannableCanvas.currentBoxIdProperty().addListener((v, oldValue, newValue) -> {
+            FamilyMemberBox newFamilyMemberBox = canvasController.pannableCanvas.getCurrentBox();
+            rightPanelController.setVisible(newFamilyMemberBox != null);
 
-            if(newRectangle != null){
-                rightPanelController.fillRightPanel(familyMembersHashMap.get(newRectangle.getId()));
+            if(newFamilyMemberBox != null){
+                rightPanelController.fillRightPanel(familyMembersHashMap.get(newFamilyMemberBox.getId()));
 
-                newRectangle.setStroke(Color.ORANGE);
-                newRectangle.setStrokeType(StrokeType.OUTSIDE);
-                newRectangle.setStrokeWidth(3);
+
+                newFamilyMemberBox.getRectangle().setStroke(Color.ORANGE);
+                newFamilyMemberBox.getRectangle().setStrokeType(StrokeType.OUTSIDE);
+                newFamilyMemberBox.getRectangle().setStrokeWidth(3);
             }
             if (oldValue != null) {
                 //after deleting from canvas, rectangle with oldValue can be null
-                Node node = canvasController.pannableCanvas.lookup("#" + oldValue);
-                if(node instanceof Rectangle) {
-                    Rectangle oldRectangle = (Rectangle) node;
-                    oldRectangle.setStroke(Color.BLUE);
-                    oldRectangle.setStrokeType(StrokeType.CENTERED);
-                    oldRectangle.setStrokeWidth(1);
+                if(canvasController.getBoxesMap().containsKey(oldValue)) {
+                    FamilyMemberBox oldBox = canvasController.getBoxesMap().get(oldValue);
+                    oldBox.setSelect(false);
                 }
             }
             System.out.println("new: " + newValue);

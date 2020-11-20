@@ -1,9 +1,6 @@
 package app.stages.mainview.mainviewsegments.leftPanel;
 
-import app.basics.AlertBox;
-import app.basics.ConfirmBox;
-import app.basics.FamilyMember;
-import app.basics.SceneGestures;
+import app.basics.*;
 import app.stages.addfamilymember.AddMemberController;
 import app.stages.mainview.mainviewsegments.MainViewSegment;
 import javafx.beans.value.ChangeListener;
@@ -72,7 +69,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
         if (!familyMember.getFirstName().isEmpty()) {
             mainViewController.getFamilyMembersHashMap().put(familyMember.getId(), familyMember);
-            mainViewController.getCanvasController().addMemberToBoard(familyMember);
+            mainViewController.getCanvasController().addFamilyMemberBox(familyMember);
             mainViewController.printFamilyMembersHashMap();
         } else {
             System.out.println("No new family member added\n");
@@ -82,7 +79,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
     @FXML
     public void handleDelMemberButtonAction() {
-        String famMemId = canvasController.pannableCanvas.getCurrentNodeId();
+        String famMemId = canvasController.pannableCanvas.getCurrentBoxId();
         if (famMemId == null) {
             AlertBox.display("Delete", "Choose family member from board first!");
         } else {
@@ -123,7 +120,9 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
     ChangeListener<String> listener;
     private final Set<String> newTiedGroup = new HashSet<>();
-    private Color newTiedGroupColor;   //color is key of tiedDroups_
+    private Color newTiedGroupColor;   //color is key of tiedGroups
+
+    private final Map<String, String> tiedRectangles = new HashMap<>();
 
 
     /*
@@ -139,50 +138,75 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
         mainViewController.getRightPanelController().rightPanelVBox.setDisable(anchorToggleButton.isSelected());
         canvasController.pannableCanvas.resetCurrentNode();
 
-        Map<String, Set<String>> tiedGroups_ = canvasController.getTiedGroups();
+        Map<String, Set<String>> tiedGroups = canvasController.getTiedGroups();
 
         if (anchorToggleButton.isSelected()) {
-            newTiedGroupColor = getColor(tiedGroups_.size());
+            newTiedGroupColor = getColor(tiedGroups.size());
 
             listener = (obs, oldId, newId) -> {
                 if (!newId.equals("")) {
                     newTiedGroup.add(newId);
-                    canvasController.markRectangle(canvasController.getRectangles().get(newId), newTiedGroupColor);
+                    canvasController.getBoxesMap().get(newId).mark(newTiedGroupColor);
 
-                    Map<String, Set<String>> tiedGroups_Copy = new HashMap<>(tiedGroups_);
+                    Map<String, Set<String>> tiedGroups_Copy = new HashMap<>(tiedGroups);
                     tiedGroups_Copy.forEach((color, tiedGroup) -> {
                         if (tiedGroup.contains(newId)) {  //if clicked rectangle is already in a tiedGroup
 
                             newTiedGroupColor = Color.valueOf(color);
-                            newTiedGroup.forEach(s -> canvasController.markRectangle(canvasController.getRectangles().get(s), newTiedGroupColor));
+                            newTiedGroup.forEach(id -> canvasController.getBoxesMap().get(id).mark(newTiedGroupColor));
 
                             newTiedGroup.addAll(tiedGroup);
-                            tiedGroups_.remove(color);
+                            tiedGroups.remove(color);
 
-                            System.out.println(tiedGroups_);
+                            System.out.println(tiedGroups);
                         }
                     });
                 }
                 System.out.println(newTiedGroup);
             };
 
-            canvasController.pannableCanvas.currentNodeIdProperty().addListener(listener);
+            canvasController.pannableCanvas.currentBoxIdProperty().addListener(listener);
         } else {
             if(!newTiedGroup.isEmpty()) {
-                tiedGroups_.put(String.valueOf(newTiedGroupColor), new HashSet<>(newTiedGroup));
+                tiedGroups.put(String.valueOf(newTiedGroupColor), new HashSet<>(newTiedGroup));
+                newTiedGroup.forEach(id -> tiedRectangles.put(id, String.valueOf(newTiedGroupColor)));
                 newTiedGroup.clear();
             }
-            canvasController.pannableCanvas.currentNodeIdProperty().removeListener(listener);
+            canvasController.pannableCanvas.currentBoxIdProperty().removeListener(listener);
 
-            //updateTiedGroups()
-            System.out.println(tiedGroups_);
+            updateTiedGroups();
+            System.out.println(tiedGroups);
+            System.out.println(tiedRectangles);
         }
     }
 
 
-//    private void updateTiedGroups() {
-//        canvasController.getTiedGroups()
-//    }
+    private void updateTiedGroups() {
+//        canvasController.getTiedGroups().forEach((id, tiedGroup) -> {
+//
+//        });
+
+
+
+//        Map<String, Group> groups = new HashMap<>();
+//        Map<String, Set<String>> tiedGroups = canvasController.getTiedGroups();
+//        tiedGroups.forEach((color, TiedGroup) -> {
+//            Group group = new Group();
+//
+//            NodeGestures nodeGestures = new NodeGestures(canvasController.pannableCanvas);
+//            group.addEventFilter(MouseEvent.MOUSE_DRAGGED, nodeGestures.getOnMouseDraggedEventHandler());
+//
+//            canvasController.pannableCanvas.getChildren().add(group);
+//            groups.put(color, group);
+//        });
+//
+//        canvasController.getRectangles().forEach((id, rectangle) -> {
+//            if(tiedRectangles.containsKey(id)) { //if rectangle is assigned to a tiedGroup (value corresponding with id in tiedRectangle is color of tiedGroup)
+//                canvasController.pannableCanvas.getChildren().remove(rectangle);
+//                groups.get(tiedRectangles.get(id)).getChildren().add(rectangle);
+//            }
+//        });
+    }
 
 
     private Color getColor(int i) {
