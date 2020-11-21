@@ -13,6 +13,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
+import javafx.scene.transform.Transform;
+import javafx.scene.transform.Translate;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -28,17 +30,17 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
     private final Map<String, FamilyMemberBox> boxesMap;
 
-    private final Map<String, Group> boxesPartition;    //maps group,s color to group of familyMemberBoxes
+    private final Map<String, Group> boxesUnionsMap;    //maps group's color(or string="noColor") to group of familyMemberBoxes
 
-    private final Map<String, Set<String>> tiedGroups;  //maps group's color to set of rectangles' ids
+    private final Map<String, Set<String>> tiedGroupsMap;  //maps group's color to set of rectangles' ids
 
     private final Map<String, Line> linesMap;
 
 
     public CanvasController() {
         boxesMap = new HashMap<>();
-        boxesPartition = new HashMap<>();
-        tiedGroups = new HashMap<>();
+        boxesUnionsMap = new HashMap<>();
+        tiedGroupsMap = new HashMap<>();
         linesMap = new HashMap<>();
     }
 
@@ -55,36 +57,43 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
 
     /*Structure of nodes in pannableCanvas looks this:
-    * PannableCanvas -> TiedGroup -> FamilyMemberGroup -> Rectangle + Text
+    * PannableCanvas -> boxesUnion(build based on TiedGroups) -> FamilyMemberGroup -> Rectangle + Text
     *
-    * when new familyMember is added to pannableCanvas, that means Rectangle + Text inside Group is added,
+    * when new familyMember is added to pannableCanvas, that means Rectangle + Text inside FamilyMemberBox is added,
     * he is pack into new Group representing new TiedGroup composed of one FamilyMemberGroup
+    *
+    * We DO NOT move FamilyMemberBox directly, but through BoxUnion,
+    * but we still can click on FamilyMemberBox
+    *
+    * BoxUnion drag event applies setTransform to all FamilyMemberBoxes in it
     * */
     public void addFamilyMemberBox(FamilyMember familyMember) {
         FamilyMemberBox familyMemberBox = new FamilyMemberBox(familyMember);
+        familyMember.setId(familyMember.getId());
         boxesMap.put(familyMember.getId(), familyMemberBox);
-        boxesPartition.put("noColor", familyMemberBox);
-
-        Group newGroup = new Group();
-        newGroup.getChildren().add(familyMemberBox);
-
 
         familyMemberBox.setTranslateX(familyMember.getPosX());
         familyMemberBox.setTranslateY(familyMember.getPosY());
 
         NodeGestures nodeGestures = new NodeGestures(pannableCanvas);
-        //event order matters!
         familyMemberBox.addEventFilter(MouseEvent.MOUSE_PRESSED, nodeGestures.getOnMousePressedEventHandler());
-        familyMemberBox.addEventFilter(MouseEvent.MOUSE_DRAGGED, nodeGestures.getOnMouseDraggedEventHandler());
         familyMemberBox.addEventFilter(MouseEvent.MOUSE_RELEASED, nodeGestures.getOnMouseReleasedEventHandler());
         familyMemberBox.addEventFilter(MouseEvent.MOUSE_CLICKED, nodeGestures.getOnMouseClickedEventHandler());
 
-        pannableCanvas.getChildren().add(newGroup);
+        Group newUnion = new Group();
+        newUnion.setId("Union composed of: " + familyMemberBox.getId());
+        boxesUnionsMap.put("noColor", newUnion);
+
+        newUnion.addEventFilter(MouseEvent.MOUSE_PRESSED, nodeGestures.getOnMousePressedEventHandler());
+        newUnion.addEventFilter(MouseEvent.MOUSE_DRAGGED, nodeGestures.getOnMouseDraggedEventHandler());
+
+        newUnion.getChildren().add(familyMemberBox);
+        pannableCanvas.getChildren().add(newUnion);
     }
 
 
     /*
-     * linke startRectangle with next selected currentNode with link of type linkType
+     * link startRectangle with next selected currentNode with link of type linkType
      */
     public void addLinkFrom(FamilyMemberBox startBox, LinkType linkType) {
         //setMouseTransparent is used to prevent pressing buttons in right panel till linking operation ends
@@ -199,10 +208,11 @@ public class CanvasController extends MainViewSegment implements Initializable {
     }
 
 
-    public void delLinkFromTo(String startId, String endId) {
-        Node node = pannableCanvas.lookup("#" + startId + endId);
-        if (node != null) {
-            pannableCanvas.getChildren().remove(node);
+    public void delLink(String linkId) {
+        Line line = linesMap.get(linkId);
+        if(line != null) {
+            pannableCanvas.getChildren().remove(line);
+            linesMap.remove(linkId);
         }
     }
 
@@ -210,8 +220,16 @@ public class CanvasController extends MainViewSegment implements Initializable {
         return boxesMap;
     }
 
-    public Map<String, Set<String>> getTiedGroups() {
-        return tiedGroups;
+    public Map<String, Set<String>> getTiedGroupsMap() {
+        return tiedGroupsMap;
+    }
+
+    public Map<String, Group> getBoxesUnionsMap() {
+        return boxesUnionsMap;
+    }
+
+    public Map<String, Line> getLinesMap() {
+        return linesMap;
     }
 
     @Override

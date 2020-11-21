@@ -138,7 +138,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
         mainViewController.getRightPanelController().rightPanelVBox.setDisable(anchorToggleButton.isSelected());
         canvasController.pannableCanvas.resetCurrentNode();
 
-        Map<String, Set<String>> tiedGroups = canvasController.getTiedGroups();
+        Map<String, Set<String>> tiedGroups = canvasController.getTiedGroupsMap();
 
         if (anchorToggleButton.isSelected()) {
             newTiedGroupColor = getColor(tiedGroups.size());
@@ -153,7 +153,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
                         if (tiedGroup.contains(newId)) {  //if clicked rectangle is already in a tiedGroup
 
                             newTiedGroupColor = Color.valueOf(color);
-                            newTiedGroup.forEach(id -> canvasController.getBoxesMap().get(id).mark(newTiedGroupColor));
+                            newTiedGroup.forEach(s -> canvasController.getBoxesMap().get(s).mark(newTiedGroupColor));
 
                             newTiedGroup.addAll(tiedGroup);
                             tiedGroups.remove(color);
@@ -182,6 +182,9 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
 
     private void updateTiedGroups() {
+        System.out.println(canvasController.getTiedGroupsMap());
+        System.out.println(canvasController.getBoxesUnionsMap());
+
 //        canvasController.getTiedGroups().forEach((id, tiedGroup) -> {
 //
 //        });

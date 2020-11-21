@@ -59,7 +59,7 @@ public class RightPanelController extends MainViewSegment {
             String motherId = mainViewController.getFamilyMembersHashMap().get(childId).getMotherId();
 
             mainViewController.getFamilyMembersHashMap().get(childId).setMotherId("");
-            mainViewController.getCanvasController().delLinkFromTo(childId, motherId);
+            canvasController.delLink(childId + motherId);
 
             //refresh rightPanel (to change button del(Link) to link)
             fillRightPanel(mainViewController.getFamilyMembersHashMap().get(childId));

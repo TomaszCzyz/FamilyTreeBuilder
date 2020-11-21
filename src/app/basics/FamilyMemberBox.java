@@ -9,16 +9,14 @@ import javafx.scene.text.Text;
 
 public class FamilyMemberBox extends Group {
 
-    private Rectangle rectangle;
-    private Text text;
-
-    private double width;
-    private double height;
+    private final Rectangle rectangle;
+    private final Text text;
 
     public FamilyMemberBox(FamilyMember familyMember) {
         super();
         rectangle = new Rectangle(100, 50);
         text = new Text();
+        text.setMouseTransparent(true);
 
         rectangle.setStroke(Color.BLUE);
         rectangle.setFill(Color.BLUE.deriveColor(1, 1, 1, 0.5));
@@ -27,8 +25,7 @@ public class FamilyMemberBox extends Group {
         text.setTranslateY(15d);
         text.setWrappingWidth(100);
         text.setText(familyMember.getFirstName() + " " + familyMember.getLastName() + "\n" +
-                "secondname: " + familyMember.getSecondName() + "\n" +
-                "-------------"); //it determines min rectangle width
+                "secondname: " + familyMember.getSecondName() + "\n");
 
         rectangle.widthProperty().bind(text.wrappingWidthProperty());
 
@@ -64,7 +61,6 @@ public class FamilyMemberBox extends Group {
         }
     }
 
-
     public double getWidth() {
         return rectangle.getWidth();
     }
@@ -85,15 +81,7 @@ public class FamilyMemberBox extends Group {
         return rectangle;
     }
 
-    public void setRectangle(Rectangle rectangle) {
-        this.rectangle = rectangle;
-    }
-
     public Text getText() {
         return text;
-    }
-
-    public void setText(Text text) {
-        this.text = text;
     }
 }
