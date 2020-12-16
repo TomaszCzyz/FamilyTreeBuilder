@@ -2,6 +2,7 @@ package app.stages.mainview;
 
 import app.basics.FamilyMember;
 import app.basics.FamilyMemberBox;
+import app.basics.NodeGestures;
 import app.configuration.Configuration;
 import app.stages.mainview.mainviewsegments.bottom.BottomController;
 import app.stages.mainview.mainviewsegments.canvas.CanvasController;
@@ -15,6 +16,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -22,6 +25,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
+
+    private final Logger logger = LoggerFactory.getLogger(MainViewController.class);
 
     @FXML
     public HBox centerHbox;
@@ -41,7 +46,7 @@ public class MainViewController implements Initializable {
 
     private final Configuration configuration;
 
-    private HashMap<String, FamilyMember> familyMembersHashMap;
+    private final HashMap<String, FamilyMember> familyMembersHashMap;
 
 
     public MainViewController() {
@@ -51,11 +56,11 @@ public class MainViewController implements Initializable {
 
 
     public void printFamilyMembersHashMap() {
-        System.out.println("[ ");
+        logger.info("[ ");
         for (var member : familyMembersHashMap.values()) {
-            System.out.println(member);
+            logger.info("{}", member);
         }
-        System.out.println(" ]");
+        logger.info(" ]");
     }
 
 
@@ -149,7 +154,7 @@ public class MainViewController implements Initializable {
                     oldBox.setSelect(false);
                 }
             }
-            System.out.println("new: " + newValue);
+            logger.info("new: {}", newValue);
         });
 
         centerHbox.setBorder(new Border(new BorderStroke(Color.BLUE,

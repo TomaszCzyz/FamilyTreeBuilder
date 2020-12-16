@@ -19,7 +19,7 @@ import app.basics.AlertBox;
 
 public class AddMemberController implements Initializable {
 
-    //i think it would be better if i change it to casual Strings and make a method to take their vaules;
+    //i think it would be better if i change it to casual Strings and make a method to take their values
     private final StringProperty firstName = new SimpleStringProperty();
     private final StringProperty secondName = new SimpleStringProperty();
     private final StringProperty lastName = new SimpleStringProperty();
@@ -87,13 +87,13 @@ public class AddMemberController implements Initializable {
         if(message.length() > 0)
             return message.toString();
 
-        //check if textfield contain olny letters
+        //check if textField contain only letters
         List<TextField> textFields = List.of(firstNameTextField, secondNameTextField, lastNameTextField);
         for(var textField : textFields) {
             if (textField.getText().isEmpty())
                 continue;
             if (!textField.getText().matches("[a-zA-Z]+")) {
-                message.append("Invalid ").append(textField.getId().toString()).append('\n');
+                message.append("Invalid ").append(textField.getId()).append('\n');
             }
         }
         if(message.length() > 0)

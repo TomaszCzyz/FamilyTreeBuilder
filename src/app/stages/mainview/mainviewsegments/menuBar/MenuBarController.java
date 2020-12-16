@@ -1,11 +1,8 @@
 package app.stages.mainview.mainviewsegments.menuBar;
 
-import app.basics.FamilyMemberBox;
-import app.basics.LinkType;
+import app.basics.*;
 import app.stages.mainview.mainviewsegments.MainViewSegment;
 import app.stages.newmenuitem.NewMenuItemController;
-import app.basics.ConfirmBox;
-import app.basics.FamilyMember;
 import com.opencsv.bean.*;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -21,6 +18,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -35,6 +34,8 @@ import java.util.List;
 
 
 public class MenuBarController extends MainViewSegment {
+
+    private final Logger logger = LoggerFactory.getLogger(MenuBarController.class);
 
     private String saveURL;
 
@@ -140,7 +141,7 @@ public class MenuBarController extends MainViewSegment {
                     .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_QUOTES)
                     .withType(FamilyMember.class).build().parse();
 
-            familyMemberList.forEach(System.out::println);
+            familyMemberList.forEach(familyMember -> logger.info("{}", familyMember));
 
             //adding just rectangle with data
             for (var familyMember : familyMemberList) {

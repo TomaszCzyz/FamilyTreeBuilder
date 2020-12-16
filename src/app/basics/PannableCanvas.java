@@ -8,9 +8,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class PannableCanvas extends Pane {
+
+    private final Logger logger = LoggerFactory.getLogger(NodeGestures.class);
 
     DoubleProperty myScale = new SimpleDoubleProperty(1.0);
 
@@ -45,7 +49,7 @@ public class PannableCanvas extends Pane {
         gc.setLineWidth(1);
 
 
-        System.out.println("w: " + w + " h: " + h);
+        logger.info("w: {}  h: {}", w, h);
 
         // draw grid lines
         double offset = 50;

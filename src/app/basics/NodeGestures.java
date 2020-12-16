@@ -5,6 +5,8 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.lang.System.currentTimeMillis;
 
@@ -12,6 +14,8 @@ import static java.lang.System.currentTimeMillis;
  * Listeners for making the nodes draggable via left mouse button. Considers if parent is zoomed.
  */
 public class NodeGestures {
+
+    private final Logger logger = LoggerFactory.getLogger(NodeGestures.class);
 
     PannableCanvas pannableCanvas;
 
@@ -36,11 +40,12 @@ public class NodeGestures {
             Node node = (Node) event.getSource();
 
             //this event can be initiate by FamilyMemberBox or BoxUnion(Group)
-            //but when we move BoxUnion we must have FamilyMemberBox's translateX(Y) values,
+            //but when we move BoxUnion we must have FamilyMemberBox's translateX/translateY values,
             //because BoxUnion does not have ones
-            if(node.getClass().equals(FamilyMemberBox.class)){
+            if(node.getClass() == FamilyMemberBox.class){
                 nodeDragContext.translateAnchorX = node.getTranslateX();
                 nodeDragContext.translateAnchorY = node.getTranslateY();
+                logger.info("translateAnchorX: {}  translateAnchorY: {}", node.getTranslateX(),  node.getTranslateY());
             }
         }
     };
@@ -56,17 +61,16 @@ public class NodeGestures {
 
             Node node = (Node) event.getSource();
 
-            System.out.println("Dragged node: " + node.getId());
-
-            double x = nodeDragContext.translateAnchorX + ((event.getSceneX() - nodeDragContext.mouseAnchorX) / scale);
-            double y = nodeDragContext.translateAnchorY + ((event.getSceneY() - nodeDragContext.mouseAnchorY) / scale);
-
             if (node instanceof Group){
                 Group unionGroup = (Group) node;
                 for (Node node1 : unionGroup.getChildren()) {
                     FamilyMemberBox familyMemberBox = (FamilyMemberBox) node1;
+                    double x = nodeDragContext.translateAnchorX + ((event.getSceneX() - nodeDragContext.mouseAnchorX) / scale);
+                    double y = nodeDragContext.translateAnchorY + ((event.getSceneY() - nodeDragContext.mouseAnchorY) / scale);
                     familyMemberBox.setTranslateX(x);
                     familyMemberBox.setTranslateY(y);
+
+                    logger.info("translateAnchorX: {}  translateAnchorY:  {}", node.getTranslateX(), node.getTranslateY());
                 }
             }
             event.consume();
@@ -78,7 +82,6 @@ public class NodeGestures {
         public void handle(MouseEvent event) {
 
             timeReleased = currentTimeMillis();
-
         }
     };
 

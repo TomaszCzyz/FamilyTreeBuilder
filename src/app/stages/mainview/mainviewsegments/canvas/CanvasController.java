@@ -13,8 +13,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
-import javafx.scene.transform.Transform;
-import javafx.scene.transform.Translate;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -30,17 +28,14 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
     private final Map<String, FamilyMemberBox> boxesMap;
 
-    private final Map<String, Group> boxesUnionsMap;    //maps group's color(or string="noColor") to group of familyMemberBoxes
-
-    private final Map<String, Set<String>> tiedGroupsMap;  //maps group's color to set of rectangles' ids
+    private final Map<String, Group> unionsMap;    //maps FamilyMemberBox's id to Union(group of familyMemberBoxes) to which it belongs
 
     private final Map<String, Line> linesMap;
 
 
     public CanvasController() {
         boxesMap = new HashMap<>();
-        boxesUnionsMap = new HashMap<>();
-        tiedGroupsMap = new HashMap<>();
+        unionsMap = new HashMap<>();
         linesMap = new HashMap<>();
     }
 
@@ -57,21 +52,24 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
 
     /*Structure of nodes in pannableCanvas looks this:
-    * PannableCanvas -> boxesUnion(build based on TiedGroups) -> FamilyMemberGroup -> Rectangle + Text
+    * PannableCanvas -> Union(build based on TiedGroups) -> FamilyMemberGroup -> Rectangle + Text
     *
     * when new familyMember is added to pannableCanvas, that means Rectangle + Text inside FamilyMemberBox is added,
     * he is pack into new Group representing new TiedGroup composed of one FamilyMemberGroup
     *
-    * We DO NOT move FamilyMemberBox directly, but through BoxUnion,
+    * We DO NOT move FamilyMemberBox directly, but through Union,
     * but we still can click on FamilyMemberBox
     *
-    * BoxUnion drag event applies setTransform to all FamilyMemberBoxes in it
+    * Union drag event applies setTransform to all FamilyMemberBoxes in it
+    *
+    * Union has id equal familyMemberId if alone in group or color assigned to this Union
     * */
     public void addFamilyMemberBox(FamilyMember familyMember) {
         FamilyMemberBox familyMemberBox = new FamilyMemberBox(familyMember);
         familyMember.setId(familyMember.getId());
         boxesMap.put(familyMember.getId(), familyMemberBox);
 
+        //we can translate familyMemberBox directly because we know that there will be only one in Union
         familyMemberBox.setTranslateX(familyMember.getPosX());
         familyMemberBox.setTranslateY(familyMember.getPosY());
 
@@ -81,8 +79,8 @@ public class CanvasController extends MainViewSegment implements Initializable {
         familyMemberBox.addEventFilter(MouseEvent.MOUSE_CLICKED, nodeGestures.getOnMouseClickedEventHandler());
 
         Group newUnion = new Group();
-        newUnion.setId("Union composed of: " + familyMemberBox.getId());
-        boxesUnionsMap.put("noColor", newUnion);
+        newUnion.setId(familyMember.getId());   //we only need information "noColor" but we need to have unique name too
+        unionsMap.put(familyMemberBox.getId(), newUnion);
 
         newUnion.addEventFilter(MouseEvent.MOUSE_PRESSED, nodeGestures.getOnMousePressedEventHandler());
         newUnion.addEventFilter(MouseEvent.MOUSE_DRAGGED, nodeGestures.getOnMouseDraggedEventHandler());
@@ -179,6 +177,9 @@ public class CanvasController extends MainViewSegment implements Initializable {
 
 
     public void delFromCanvas(String familyMemberId) {
+        if(familyMemberId == null)
+            return;
+
         //set of nodes to delete
         Set<Node> nodes = new HashSet<>();
 
@@ -220,12 +221,8 @@ public class CanvasController extends MainViewSegment implements Initializable {
         return boxesMap;
     }
 
-    public Map<String, Set<String>> getTiedGroupsMap() {
-        return tiedGroupsMap;
-    }
-
-    public Map<String, Group> getBoxesUnionsMap() {
-        return boxesUnionsMap;
+    public Map<String, Group> getUnionsMap() {
+        return unionsMap;
     }
 
     public Map<String, Line> getLinesMap() {

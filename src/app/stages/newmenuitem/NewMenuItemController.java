@@ -1,6 +1,7 @@
 package app.stages.newmenuitem;
 
 import app.basics.AlertBox;
+import app.basics.NodeGestures;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -10,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +22,8 @@ import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class NewMenuItemController implements Initializable {
+
+    private final Logger logger = LoggerFactory.getLogger(NewMenuItemController.class);
 
     private boolean isFileCreated = false;
 
@@ -59,7 +64,8 @@ public class NewMenuItemController implements Initializable {
             File newFile = new File(fullURL.getValue());
             if (newFile.createNewFile()) {
                 isFileCreated = true;
-                System.out.println("File created: " + newFile.getName());
+
+                logger.info("File created: {}", newFile.getName());
                 Stage stage = (Stage) okButton.getScene().getWindow();
                 stage.close();
             } else {

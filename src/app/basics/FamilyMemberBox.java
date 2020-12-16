@@ -10,6 +10,7 @@ import javafx.scene.text.Text;
 public class FamilyMemberBox extends Group {
 
     private final Rectangle rectangle;
+
     private final Text text;
 
     public FamilyMemberBox(FamilyMember familyMember) {

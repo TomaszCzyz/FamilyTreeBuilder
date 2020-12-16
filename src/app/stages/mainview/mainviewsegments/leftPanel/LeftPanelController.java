@@ -7,13 +7,17 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,6 +26,8 @@ import java.util.*;
 
 
 public class LeftPanelController extends MainViewSegment implements Initializable {
+
+    private final Logger logger = LoggerFactory.getLogger(LeftPanelController.class);
 
     @FXML
     public VBox leftPanelVBox;
@@ -72,7 +78,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
             mainViewController.getCanvasController().addFamilyMemberBox(familyMember);
             mainViewController.printFamilyMembersHashMap();
         } else {
-            System.out.println("No new family member added\n");
+            logger.info("No new family member added");
         }
         addButton.setDisable(false);
     }
@@ -80,7 +86,7 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
     @FXML
     public void handleDelMemberButtonAction() {
         String famMemId = canvasController.pannableCanvas.getCurrentBoxId();
-        if (famMemId == null) {
+        if (canvasController.getBoxesMap().get(famMemId) == null) {
             AlertBox.display("Delete", "Choose family member from board first!");
         } else {
             boolean answer = ConfirmBox.display("Delete", "Sure you want to delete family member permanently?");
@@ -119,36 +125,32 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
 
 
     ChangeListener<String> listener;
+    private final Map<String, Set<String>> tiedGroupsMap = new HashMap<>();  //maps group's color to set of rectangles' ids
     private final Set<String> newTiedGroup = new HashSet<>();
     private Color newTiedGroupColor;   //color is key of tiedGroups
 
-    private final Map<String, String> tiedRectangles = new HashMap<>();
-
-
     /*
-    * When anchorToggleButton is pressed newTiedGroup is created.
-    * If untied rectangle will be clicked it will be added to newTiedGroup
-    * But if rectangle which already is in TiedGroup will be selected, then this TiedGroup will become
-    * newTiedGroup and it will be delete form tiedGroups(Map). Thanks to this behavior multiple small TiedGroups
-    * can be join into one.
-    * When anchorToggleButton is released, newTiedGroup is added to tiedGroups_
-    * */
+     * When anchorToggleButton is pressed newTiedGroup is created.
+     * If untied rectangle will be clicked it will be added to newTiedGroup
+     * But if rectangle which already is in TiedGroup will be selected, then this TiedGroup will become
+     * newTiedGroup and it will be delete form tiedGroups(Map). Thanks to this behavior multiple small TiedGroups
+     * can be join into one.
+     * When anchorToggleButton is released, newTiedGroup is added to tiedGroups_
+     * */
     @FXML
     public void handleAnchorToggleButtonAction() {
         mainViewController.getRightPanelController().rightPanelVBox.setDisable(anchorToggleButton.isSelected());
         canvasController.pannableCanvas.resetCurrentNode();
 
-        Map<String, Set<String>> tiedGroups = canvasController.getTiedGroupsMap();
-
         if (anchorToggleButton.isSelected()) {
-            newTiedGroupColor = getColor(tiedGroups.size());
+            newTiedGroupColor = getColor(tiedGroupsMap.size());
 
             listener = (obs, oldId, newId) -> {
                 if (!newId.equals("")) {
                     newTiedGroup.add(newId);
                     canvasController.getBoxesMap().get(newId).mark(newTiedGroupColor);
 
-                    Map<String, Set<String>> tiedGroups_Copy = new HashMap<>(tiedGroups);
+                    Map<String, Set<String>> tiedGroups_Copy = new HashMap<>(tiedGroupsMap);
                     tiedGroups_Copy.forEach((color, tiedGroup) -> {
                         if (tiedGroup.contains(newId)) {  //if clicked rectangle is already in a tiedGroup
 
@@ -156,59 +158,55 @@ public class LeftPanelController extends MainViewSegment implements Initializabl
                             newTiedGroup.forEach(s -> canvasController.getBoxesMap().get(s).mark(newTiedGroupColor));
 
                             newTiedGroup.addAll(tiedGroup);
-                            tiedGroups.remove(color);
+                            tiedGroupsMap.remove(color);
 
-                            System.out.println(tiedGroups);
+                            logger.info("tiedGroupMap: {}", tiedGroupsMap);
                         }
                     });
                 }
-                System.out.println(newTiedGroup);
+                logger.info("newTiedGroup: {}", newTiedGroup);
             };
 
             canvasController.pannableCanvas.currentBoxIdProperty().addListener(listener);
         } else {
-            if(!newTiedGroup.isEmpty()) {
-                tiedGroups.put(String.valueOf(newTiedGroupColor), new HashSet<>(newTiedGroup));
-                newTiedGroup.forEach(id -> tiedRectangles.put(id, String.valueOf(newTiedGroupColor)));
+            if (!newTiedGroup.isEmpty()) {
+                tiedGroupsMap.put(String.valueOf(newTiedGroupColor), new HashSet<>(newTiedGroup));
                 newTiedGroup.clear();
             }
             canvasController.pannableCanvas.currentBoxIdProperty().removeListener(listener);
 
             updateTiedGroups();
-            System.out.println(tiedGroups);
-            System.out.println(tiedRectangles);
         }
     }
 
-
+    /*
+     * Check if all FamilyMemberBoxes are in good Unions,
+     * if not, then put them in right ones
+     */
     private void updateTiedGroups() {
-        System.out.println(canvasController.getTiedGroupsMap());
-        System.out.println(canvasController.getBoxesUnionsMap());
+        logger.info("tiedGroup: {}", tiedGroupsMap);
+        logger.info("unionMap: {}", canvasController.getUnionsMap());
 
-//        canvasController.getTiedGroups().forEach((id, tiedGroup) -> {
-//
-//        });
+        tiedGroupsMap.forEach((color, tiedGroup) -> {
+            //create a newUnion with color
+            Group newUnion = new Group();
+            newUnion.setId(color);
+            NodeGestures nodeGestures = new NodeGestures(canvasController.pannableCanvas);
+            newUnion.addEventFilter(MouseEvent.MOUSE_PRESSED, nodeGestures.getOnMousePressedEventHandler());
+            newUnion.addEventFilter(MouseEvent.MOUSE_DRAGGED, nodeGestures.getOnMouseDraggedEventHandler());
+            canvasController.pannableCanvas.getChildren().add(newUnion);
 
+            tiedGroup.forEach(familyMemberId -> {
+                Group currentUnion = canvasController.getUnionsMap().get(familyMemberId);
+                FamilyMemberBox familyMemberBox = canvasController.getBoxesMap().get(familyMemberId);
+                if (currentUnion.getId().equals(familyMemberBox.getId())) { /*if familyMemberBox is alone in his group, then delete this group after moving Box*/
+                    canvasController.getUnionsMap().put(familyMemberId, newUnion);
 
-
-//        Map<String, Group> groups = new HashMap<>();
-//        Map<String, Set<String>> tiedGroups = canvasController.getTiedGroups();
-//        tiedGroups.forEach((color, TiedGroup) -> {
-//            Group group = new Group();
-//
-//            NodeGestures nodeGestures = new NodeGestures(canvasController.pannableCanvas);
-//            group.addEventFilter(MouseEvent.MOUSE_DRAGGED, nodeGestures.getOnMouseDraggedEventHandler());
-//
-//            canvasController.pannableCanvas.getChildren().add(group);
-//            groups.put(color, group);
-//        });
-//
-//        canvasController.getRectangles().forEach((id, rectangle) -> {
-//            if(tiedRectangles.containsKey(id)) { //if rectangle is assigned to a tiedGroup (value corresponding with id in tiedRectangle is color of tiedGroup)
-//                canvasController.pannableCanvas.getChildren().remove(rectangle);
-//                groups.get(tiedRectangles.get(id)).getChildren().add(rectangle);
-//            }
-//        });
+                    currentUnion.getChildren().remove(familyMemberBox);
+                    newUnion.getChildren().add(familyMemberBox);
+                }
+            });
+        });
     }
 
 
